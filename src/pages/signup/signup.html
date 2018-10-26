@@ -1,0 +1,63 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+	<ion-navbar>
+		<ion-title delportal>Registro de usuario</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content padding-horizontal>
+	<p text-center>&iquest;Aún no tienes cuenta
+		<em>Delportal</em>? Bienvenido.</p>
+	<ion-list class="login-form">
+		<form [formGroup]="formSignup">
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" formControlName="first_name" placeholder="{{'general.first_name'|translate}}"
+				 clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" formControlName="last_name" placeholder="{{'general.last_name'|translate}}"
+				 clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" placeholder="{{'general.username'|translate}}" type="text" formControlName="username"
+				 clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" placeholder="{{'general.email'|translate}}" type="email" formControlName="email"
+				 clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" placeholder="{{'general.password'|translate}}" type="password" formControlName="password"
+				 (input)="removeConfirm()" clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" placeholder="{{'signup.confirm_password'|translate}}" type="password"
+				 formControlName="repass" clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-datetime placeholder="{{'general.dob'|translate}}" displayFormat="DD/MM/YYYY" formControlName="dob" doneText="Ok"
+				 cancelText="Cancelar"></ion-datetime>
+			</ion-item>
+			<ion-item text-wrap bg-transparent no-padding>
+				<ion-label font-90>Acepto los términos y condiciones de la aplicación
+					<em>Delportal</em>
+				</ion-label>
+				<ion-checkbox formControlName="acepto"></ion-checkbox>
+			</ion-item>
+		</form>
+	</ion-list>
+	<button ion-button block (click)="register()" [disabled]="formSignup.invalid">
+		<span>Crear Cuenta</span>
+	</button>
+
+
+</ion-content>

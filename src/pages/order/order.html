@@ -1,0 +1,72 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+<ion-content>
+	<!-- Refresh -->
+	<ion-refresher (ionRefresh)="doRefresh($event)">
+		<ion-refresher-content [pullingIcon]="'general.pullingIcon'|translate" [pullingText]="'general.pullToRefresh'|translate"
+		 [refreshingSpinner]="'general.refreshingSpinner'|translate" [refreshingText]="'general.refreshing'|translate">
+		</ion-refresher-content>
+	</ion-refresher>
+
+	<h4 delportal text-center>Historial de Compras</h4>
+	<!-- Empty -->
+	<ion-row center  width-100 height-100 *ngIf="noOrder">
+		<ion-col width-50 style="margin:0 auto" text-center>
+			<span>{{'order.empty'|translate}}</span>
+			<button margin-vertical ion-button block (click)="shop()">{{'order.shop'|translate}}</button>
+		</ion-col>
+	</ion-row>
+	<!-- Has orders -->
+	<ion-row *ngFor="let order of data" class="item-order" [ngClass]="order.status" padding relative [navPush]="DetailOrderPage" [navParams]="{id:order.id}">
+		<ion-col col-8 no-padding>
+			<div class="order-id">
+				<b dark>{{'order.id'|translate}} - #{{order.id}}</b>
+				<span class="order-status" *ngIf="order.status == 'processing'" light text-capitalize>{{'order.status.processing' |translate
+					}}</span>
+				<span class="order-status" *ngIf="order.status == 'on-hold'" light text-capitalize>{{'order.status.on_hold' |translate
+					}}</span>
+				<span class="order-status" *ngIf="order.status == 'cancelled'" light text-capitalize>{{'order.status.cancelled' |translate
+					}}</span>
+				<span class="order-status" *ngIf="order.status == 'completed'" light text-capitalize>{{'order.status.completed' |translate
+					}}</span>
+				<span class="order-status" *ngIf="order.status == 'pending'" light text-capitalize>{{'order.status.pending' |translate
+					}}</span>
+				<span class="order-status" *ngIf="order.status == 'refunded'" light text-capitalize>{{'order.status.refunded' |translate
+					}}</span>
+				<span class="order-status" *ngIf="order.status == 'failed'" light text-capitalize>{{'order.status.failed' |translate
+					}}</span>
+			</div>
+			<div>
+				<span green3>{{order.date_created|date:date_format}}</span> - Entregado en {{order.shippings.shipping_address_1}}
+			</div>
+		</ion-col>
+		<ion-col col-4 align-self-center >
+			<div class="product-go-container">
+				<span style="font-size:1.2em;" light-green [innerHTML]="order.total"></span>
+				<ion-icon name="arrow-forward" size="large" float-right style="font-size:1.5em;" delportal></ion-icon>
+			</div>
+		</ion-col>
+	</ion-row>
+	<ion-row *ngIf="notLoggedIn" align-items-center text-center padding>
+		<ion-col>
+			<p>Aquí mostraremos tus últimas órdenes en
+				<em>Delportal</em>
+			</p>
+			<button ion-button (click)="gotoLogin()">
+				<span>Iniciar Sesión</span>
+			</button>
+		</ion-col>
+	</ion-row>
+	<ion-infinite-scroll (ionInfinite)="load($event)" *ngIf="!over">
+		<ion-infinite-scroll-content></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>

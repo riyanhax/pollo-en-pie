@@ -1,0 +1,183 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+	<ion-toolbar>
+		<ion-row class="search-navbar">
+			<ion-col col-1 text-center>
+				<button ion-button clear (click)="back()">
+					<ion-icon name="arrow-back" size="large" gray></ion-icon>
+				</button>
+			</ion-col>
+			<ion-col col-8>
+				<ion-searchbar #si autocomplete="on" autocorrect="on" placeholder="{{'search.title'|translate}}" [(ngModel)]="keyword"
+				 [showCancelButton]="true" cancelButtonText="Cancelar" (ionInput)="searchTerms($event)" (ionCancel)="onCancel($event)">
+				</ion-searchbar>
+				<!--<ion-auto-complete (handleTap)="null" (itemSelected)="onItemSelected($event)" class="search-input" [dataProvider]="dpSearch" [options]="{placeholder : 'Búsqueda de Productos', type: 'text', noItems: 'No encontramos coincidencias', clearInput: true, clearOnEdit: true }"
+						 #si ></ion-auto-complete>-->
+			</ion-col>
+			<ion-col col-1 text-center>
+				<button ion-button clear (click)="search()">
+					<ion-icon name="search" size="large" gray></ion-icon>
+				</button>
+			</ion-col>
+			<ion-col col-2 text-center>
+				<button ion-button clear (click)="openCamera()">
+					<img src="assets/images/barcode.png" width="30px" />
+				</button>
+			</ion-col>
+		</ion-row>
+
+	</ion-toolbar>
+</ion-header>
+<ion-content>
+	<div text-center>
+		<ion-spinner icon="crescent" *ngIf="searching"></ion-spinner>
+	</div>
+	<ion-list *ngIf="searchItems.length > 0">
+		<ion-item *ngFor="let item of searchItems" [navPush]="DetailPage" [navParams]="{id:item.id}">
+			{{item.name}}
+		</ion-item>
+	</ion-list>
+	<ion-toolbar *ngIf="!noResuilt && products.length > 0" class="header-filter">
+		<!--<button ion-button clear color="dark" no-margin (click)="openFilter()" class="disable-hover button-drop">
+					<span [attr.primary]="filter.open=='filter' ? true : null">{{'categories.filter'|translate}}</span>
+					<ion-icon name="md-arrow-dropdown"></ion-icon>
+				</button>-->
+		<div float-right>
+			<button ion-button clear color="dark" no-margin (click)="openSort()" class="disable-hover button-drop">
+				<span [attr.primary]="filter.open=='sort' ? true : null">{{'categories.sort'|translate}}</span>
+				<ion-icon name="md-arrow-dropdown"></ion-icon>
+			</button>
+		</div>
+		<div float-left>
+			<button float-right ion-button clear color="dark" no-margin class="disable-hover" [ngClass]="{'disabled':filter.grid}"
+			 (click)="filter.grid=false">
+				<ion-icon name="reorder" size="large"></ion-icon>
+			</button>
+			<button float-right ion-button clear color="dark" no-margin class="disable-hover" [ngClass]="{'disabled':!filter.grid}"
+			 (click)="filter.grid=true">
+				<ion-icon name="grid" size="large"></ion-icon>
+			</button>
+		</div>
+	</ion-toolbar>
+	<div (swipe)="onSwipeContent($event)" height-100>
+		<!-- Filter -->
+		<div *ngIf="filter.open=='filter'" ion-fixed width-100 height-100 light-bg>
+			<ion-scroll width-100 height-100 scrollY="true">
+				<ion-list>
+					<!-- Range Price -->
+					<hide-show color="light">
+						<span this-title>
+							<b>{{'categories.price_range'|translate}}</b>
+							<span>{{range.lower|price}}</span>
+							<span *ngIf="0<range.upper"> - {{range.upper|price}}</span>
+						</span>
+						<ion-range mode="md" this-content dualKnobs="true" [min]="attributes.min_price" [max]="attributes.max_price"
+						 [(ngModel)]="range">
+						</ion-range>
+					</hide-show>
+					<hide-show color="light" *ngFor="let attr of attributes.attributes" class="filter-attribute">
+						<span this-title>
+							<b text-capitalize [innerHTML]="attr.name"></b>
+						</span>
+						<ion-row wrap this-content padding-bottom>
+							<ion-col width-50 *ngFor="let term of attr.term" no-padding>
+								<ion-item mode="md" no-padding>
+									<ion-label [innerHTML]="term.name"></ion-label>
+									<ion-checkbox [(ngModel)]="filter.value[attr.slug][term.slug]"></ion-checkbox>
+								</ion-item>
+							</ion-col>
+						</ion-row>
+					</hide-show>
+					<hide-show color="light" *ngFor="let attr of attributes.custom" class="filter-attribute">
+						<span this-title>
+							<b text-capitalize [innerHTML]="attr.name"></b>
+						</span>
+						<ion-row wrap this-content padding-bottom>
+							<ion-col width-50 *ngFor="let term of attr.term|ObjectToArray" no-padding>
+								<ion-item mode="md" no-padding>
+									<ion-label [innerHTML]="term.name"></ion-label>
+									<ion-checkbox [(ngModel)]="filter.valueCustom[attr.slug][term.slug]"></ion-checkbox>
+								</ion-item>
+							</ion-col>
+						</ion-row>
+					</hide-show>
+				</ion-list>
+			</ion-scroll>
+		</div>
+		<!-- Sort -->
+		<div *ngIf="filter.open=='sort'" ion-fixed width-100 height-100 mark tappable (click)="filter.open=null">
+			<ion-list radio-group [(ngModel)]="sort" class="list-sort" (ngModelChange)="filter.open=null">
+				<ion-item *ngFor="let option of 'categories.sortData'|translate">
+					<ion-label [innerHTML]="option.text"></ion-label>
+					<ion-radio [value]="option.value"></ion-radio>
+				</ion-item>
+			</ion-list>
+		</div>
+		<!-- No result -->
+		<ion-row center ion-fixed width-100 height-100 *ngIf="noResuilt" (swipe)="onSwipeContent($event)">
+			<ion-col width-100 text-center>{{'search.no_result'|translate}}
+			</ion-col>
+		</ion-row>
+		<!-- Has result -->
+		<!-- List products -->
+		<ion-row padding wrap *ngIf="0< products.length" [ngClass]="{'filter-list':!filter.grid}" (swipe)="onSwipeContent($event)">
+			<ion-col align-self-center padding-8 relative [attr.width-33]="filter.grid ? true : null" *ngFor="let product of products|orderBy:sort"
+			 class="product-block">
+				<div class="product-info with-check" *ngIf="shoppingListId != 0">
+					<ion-checkbox (click)="toggle($event,product.id)"></ion-checkbox>
+				</div>
+				<div [navPush]="DetailPage" [navParams]="{id:product.id}" relative class="product-image clearfix">
+					<!-- <img float-left *ngIf="product.modernshop_images && product.modernshop_images[0].modern_square" [src]="product.modernshop_images[0].modern_square" /> -->
+					<img-loader useImg float-left *ngIf="product.square_image != ''" src="{{product.square_image}}"></img-loader>
+					<img float-left *ngIf="product.square_image == ''" src="assets/images/logo-preload.png" />
+					<div absolute bottom primary-bg product-sale *ngIf="product.sale_price" class="sale">
+						<span light>{{(product.sale_price/product.regular_price*100)-100|number:'1.0-0'}}%</span>
+					</div>
+					<img absolute icon-sale *ngIf="product.on_sale == 1" src="assets/images/icon-sale.png" />
+				</div>
+				<div class="product-info clearfix">
+					<div [navPush]="DetailPage" [navParams]="{id:product.id}">
+						<div class="product-title-container" [attr.text-center]="filter.grid ? true : null">
+							<span class="product-title capFirst" text-lowercase gray [innerHTML]="product.name.substring(0,25)"></span>
+						</div>
+						<div class="product-price-container" [attr.text-center]="filter.grid ? true : null">
+							<span [attr.no-margin]="filter.grid ? null : true">
+								<span class="product-price" font-90>
+									<b light-green font-120>{{product.price*1||0|price}}</b>
+									<span *ngIf="product.sale_price" margin-left text-through>{{product.regular_price*1|price}}</span>
+								</span>
+							</span>
+						</div>
+
+						<div class="product-go-container" text-right>
+							<ion-icon name="arrow-forward" size="large" style="font-size:2em;" [hidden]="filter.grid" delportal end></ion-icon>
+						</div>
+					</div>
+
+				</div>
+
+			</ion-col>
+		</ion-row>
+		<ion-infinite-scroll (ionInfinite)="load($event)" *ngIf="!over">
+			<ion-infinite-scroll-content></ion-infinite-scroll-content>
+		</ion-infinite-scroll>
+	</div>
+</ion-content>
+<ion-footer *ngIf="shoppingListId != 0 && 0< products.length">
+	<ion-toolbar>
+		<ion-buttons text-center>
+			<ion-col>
+				<button ion-button bg-primary (click)="addToShoppingList()" class="disable-hover">
+					Agregar a la lista
+				</button>
+			</ion-col>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-footer>

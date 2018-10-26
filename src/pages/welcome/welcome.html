@@ -1,0 +1,40 @@
+<ion-content>
+    <ion-row padding>
+        <ion-col col-2>
+            &nbsp;
+        </ion-col>
+        <ion-col col-8>
+            <img src="assets/images/logo_t.png" />
+        </ion-col>
+        <ion-col col-2>
+            &nbsp;
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col text-center padding>
+            <h2 delportal>Bienvenido, {{registeredFirstName}}!</h2>
+            <p>Gracias por registrarte. Ahora podrás disfrutar de todos los beneficios de nuestra aplicación</p>
+            <p>&nbsp;</p>
+            <p>
+                Promociones especiales
+                <br /> Listas de compras configurables
+                <br /> Compras por suscripción
+                <br /> Rastreo de pedidos
+                <br /> Servicio de soporte
+                <br />
+            </p>
+            <p>&nbsp;</p>
+            <p>
+                En breves momentos recibirás un correo electrónico a tu dirección de correo confirmando tus datos de registro.
+            </p>
+
+        </ion-col>
+    </ion-row>
+    <ion-row align-items-center text-center>
+        <ion-col text-center>
+            <button ion-button (click)="gotoLogin()">
+                <span>Iniciar Sesión</span>
+            </button>
+        </ion-col>
+    </ion-row>
+</ion-content>

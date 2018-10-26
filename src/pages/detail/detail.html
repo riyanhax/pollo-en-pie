@@ -1,0 +1,272 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-navbar>
+		<ion-title>Regresar</ion-title>
+	</ion-navbar>
+</ion-header>
+<ion-content>
+	<!-- Slides -->
+	<div relative class="product-slides" padding-4 light-bg>
+		<ion-slides (ionSlideDidChange)="changeSlides($event)" pager="false" dir="{{display}}">
+			<ion-slide>
+				<div text-center>
+					<img-loader useImg [spinner]="false" *ngIf="detail.medium_image" src="{{detail.medium_image}}" (click)="viewImage(detail.large_image)"></img-loader>
+					<img *ngIf="detail.small_image == ''" src="assets/images/logo-preload.png" />
+				</div>
+				<!--<img text-center *ngIf="image.wooconnector_small" [src]="image.wooconnector_small" (click)="viewImage(image.wooconnector_large)"
+				/>
+				<img text-center *ngIf="!image.wooconnector_small" src="assets/images/no-image.png" />-->
+			</ion-slide>
+		</ion-slides>
+
+		<div absolute right bottom padding product-sale *ngIf="detail.sale_price && detail.date_on_sale_to">
+			<span light rojo-bg>Oferta termina en {{finalTimeLeft}}</span>
+		</div>
+		<!--
+		<div absolute text-center padding-4 width-100 class="slides-info" *ngIf="detail.wooconnector_crop_images && detail.wooconnector_crop_images.length > 1"
+		 dir="ltr">
+			<span light padding-4>{{slides}} de {{detail.wooconnector_crop_images.length}}</span>
+		</div>-->
+	</div>
+	<!-- Body -->
+	<div *ngIf="detail.name" (swipe)="onSwipe($event)">
+		<!-- Info -->
+		<div padding style="padding-bottom: 0;background:#ECECEC;">
+			<ion-row>
+				<ion-col col-7>
+					<h5 class="capFirst">
+						<span dark444 text-lowercase [innerHTML]="detail.name"></span>
+					</h5>
+				</ion-col>
+				<ion-col>
+					<h4 *ngIf="detail.type!='grouped' && detail.price" no-margin text-right>
+						<span margin-right *ngIf="detail.sale_price" font-80>
+							<span delportal rojo text-through>{{detail.regular_price*1|price}}</span>
+						</span>
+						<b light-green font-110 align-right>{{detail.price*1||0|price}}</b>
+					</h4>
+					<h4 *ngIf="detail.type=='grouped'" no-margin light-green text-right>
+						<b font-80 [innerHTML]="detail.price_html"></b>
+					</h4>
+				</ion-col>
+			</ion-row>
+			<!--
+			<ion-row center class="product-rate" [navPush]="CommentsPage" [navParams]="{id:detail.id,data:detail.wooconnector_reviews,allow:reviews_allowed}">
+				<div class="rate">
+					<div class="rating" [style.width]="rating*20+'%'"></div>
+				</div>
+				<span margin-left no-wrap>{{ratingCount}} {{'detail.rating'|translate}} & {{reviewCount.length}} {{'detail.review'|translate}}</span>
+				<ion-icon margin-left name="ios-arrow-forward"></ion-icon>
+			</ion-row>-->
+		</div>
+		<!-- Item Description -->
+		<div padding style="padding-bottom: 0" class="detail-description" *ngIf="description">
+			<!--<div padding-top><h6 no-margin dark>{{'detail.item_description'|translate}}</h6></div>-->
+			<div *ngIf="!viewMore" [innerHtml]="description|viewmore" class="description-content"></div>
+			<div *ngIf="viewMore" [innerHtml]="description" class="description-content disable-hover"></div>
+			<button ion-button clear (click)="viewMore=!viewMore" font-80 no-padding no-margin>
+				<div *ngIf="!viewMore">{{'detail.view_more'|translate}}</div>
+				<div *ngIf="viewMore">{{'detail.view_less'|translate}}</div>
+			</button>
+		</div>
+		<!-- Quantum & Price-->
+		<div padding style="padding-bottom: 0;background:#ECECEC;">
+			<div border-top padding-8-vertical>
+				<ion-row dark class="quantity-price" wrap>
+					<ion-col col-8 align-self-center no-padding>
+						<span class="qtyText">{{'detail.quantity'|translate}}</span>
+						<button-quantity float-left [(ngModel)]="quantity" [max]="detail.stock"></button-quantity>
+					</ion-col>
+
+					<ion-col col-4 no-padding text-right>
+						<!--<h3 no-margin>
+						<b>{{detail.price*quantity||0|price}}</b>
+					</h3>-->
+						<!-- <button ion-button float-right primary-bg clear class="disable-hover" [disabled]="!(detail.price*1) && detail.price.html == ''"
+						 color="light" (click)="addToCart()">
+							<h5 no-margin text-uppercase *ngIf="detail.type!='external'">{{'detail.addToCart'|translate}}</h5>
+							<span *ngIf="detail.type=='external'" no-wrap-ellipsis>
+								<ion-icon name="icon-link"></ion-icon>
+								<span>{{detail.button_text}}</span>
+							</span>
+						</button> -->
+						<button ion-button float-right class="button-cart disable-hover" [disabled]="!detail.price" (tap)="addToCart()">
+							<div float-left width-100 font-weight-500>
+								Agregar
+							</div>
+						</button>
+					</ion-col>
+				</ion-row>
+			</div>
+		</div>
+		<div padding>
+			<ion-row border-top>
+				<ion-col col-6>
+					<button *ngIf="loggedIn" ion-button (click)="addToList()" class="disable-hover"
+					 text-capitalize>
+						A&ntilde;adir a una lista
+					</button>
+				</ion-col>
+				<ion-col col-6>
+					<button ion-button (click)="share()" class="disable-hover">
+						<ion-icon icon-big name="ios-share" grey></ion-icon>&nbsp;&nbsp; Compartir
+					</button>
+				</ion-col>
+			</ion-row>
+		</div>
+
+		<!-- Attributes -->
+		<div padding margin-top light-bg *ngIf="detail.type!='grouped' && detail.type!='external' && detail.type=='variable'">
+			<div *ngIf="detail.type=='variable'">
+				<div *ngFor="let attr of detail.attributes | filter:{variation:true}">
+					<!-- Color -->
+					<div *ngIf="(attr.name|uppercase)=='COLOR'" class="attribute-color">
+						<div text-uppercase>
+							<b dark>{{attr.name}}</b>
+						</div>
+						<ion-list mode="md" overflow radio-group [(ngModel)]="attributes[attr.name].option" (ngModelChange)="getVariation()">
+							<ion-item float-left margin-right *ngFor="let option of attr.options" no-padding>
+								<ion-radio [value]="(option|lowercase)" [style.background]="option"></ion-radio>
+							</ion-item>
+						</ion-list>
+					</div>
+					<!-- Size or Orther -->
+					<div *ngIf="(attr.name|uppercase)!='COLOR'" [ngClass]="(attr.name|uppercase)=='SIZE' ? 'attribute-size':'attribute-default'">
+						<div text-uppercase>
+							<b dark>{{attr.name}}</b>
+						</div>
+						<ion-list mode="md" overflow radio-group [(ngModel)]="attributes[attr.name].option" (ngModelChange)="getVariation()">
+							<ion-item float-left *ngFor="let option of attr.options" no-padding>
+								<ion-label [attr.text-center]="(attr.name|uppercase)=='SIZE'?true:null">{{option}}</ion-label>
+								<ion-radio [value]="(option|lowercase)"></ion-radio>
+							</ion-item>
+						</ion-list>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- Grouped -->
+		<div padding-horizontal border-bottom light-bg *ngIf="detail.type=='grouped'">
+			<ion-row *ngFor="let product of groupedProduct; let i = index" class="item-product-grouped">
+				<ion-col no-padding [navPush]="DetailPage" [navParams]="{id:product.id}">
+					<div dark>
+						<b [innerHTML]="product.name"></b>
+					</div>
+					<span *ngIf="product.sale_price">
+						<span text-through>{{product.regular_price*1|price}}</span>
+					</span>
+					<b dark>{{product.price*1||0|price}}</b>
+					<ion-badge font-80 *ngIf="product.sale_price">{{(product.sale_price/product.regular_price*100)-100|number:'1.0-0'}}%</ion-badge>
+					<span *ngIf="!detail.in_stock">
+						{{'detail.outStock'|translate}}
+					</span>
+				</ion-col>
+				<ion-col *ngIf="product.type=='variable' || product.type=='external'" width-33 no-padding>
+					<button ion-button clear no-margin [navPush]="DetailPage" [navParams]="{id:product.id}" class="disable-hover">
+						<span *ngIf="product.type=='variable'">{{'detail.grouped.variable'|translate}}</span>
+						<span *ngIf="product.type=='external'" text-underline>{{product.button_text}}</span>
+					</button>
+				</ion-col>
+				<ion-col *ngIf="product.type=='simple' && detail.in_stock" width-33 no-padding>
+					<ion-item mode="md" *ngIf="product.sold_individually">
+						<ion-checkbox mode="md" [(ngModel)]="groupedProduct[i].quantity" value="1"></ion-checkbox>
+					</ion-item>
+					<button-quantity *ngIf="!product.sold_individually" float-left [(ngModel)]="groupedProduct[i].quantity" min="0"
+					 [max]="(product.manage_stock && !product.backorders_allowed)?product.stock_quantity:null"></button-quantity>
+				</ion-col>
+			</ion-row>
+		</div>
+		<!-- About This Item 
+		<div padding margin-top light-bg border-bottom class="about-this-item" *ngIf="detail.type!='grouped' && (detail.sku || detail.manage_stock || 0< detail.attributes.length)">
+			<div margin-bottom>
+				<h6 no-margin dark>{{'detail.about_this_item'|translate}}</h6>
+			</div>
+			<ion-row *ngIf="detail.sku">
+				<ion-col>
+					<b>{{'detail.sku'|translate}}</b>
+				</ion-col>
+				<ion-col>{{detail.sku}}</ion-col>
+			</ion-row>
+			<ion-row *ngIf="detail.dimensions && detail.dimensions.height">
+				<ion-col>
+					<b>{{'detail.height'|translate}}</b>
+				</ion-col>
+				<ion-col>{{detail.dimensions.height}}</ion-col>
+			</ion-row>
+			<ion-row *ngIf="detail.dimensions && detail.dimensions.length">
+				<ion-col>
+					<b>{{'detail.length'|translate}}</b>
+				</ion-col>
+				<ion-col>{{detail.dimensions.length}}</ion-col>
+			</ion-row>
+			<ion-row *ngIf="detail.dimensions && detail.dimensions.width">
+				<ion-col>
+					<b>{{'detail.width'|translate}}</b>
+				</ion-col>
+				<ion-col>{{detail.dimensions.width}}</ion-col>
+			</ion-row>
+			<ion-row *ngIf="detail.manage_stock">
+				<ion-col>
+					<b>{{'detail.quantity'|translate}}</b>
+				</ion-col>
+				<ion-col>{{detail.stock_quantity||0}} {{'detail.available'|translate}}</ion-col>
+			</ion-row>
+			<ion-row *ngFor="let attribute of detail.attributes">
+				<ion-col text-capitalize>
+					<b>{{attribute.name}}</b>
+				</ion-col>
+				<ion-col>{{attribute.options|ArrayJoin}}</ion-col>
+			</ion-row>
+		</div>-->
+
+		<!-- Buyer Protection
+		<div margin-top class="buyer-protection">
+			<div class="buyer-icon">
+				<ion-icon name="icon-safe" success></ion-icon>
+			</div>
+			<div class="buyer-content" padding>
+				<div><b dark [innerHTML]="'modern_buyer_product_title'|static"></b></div>
+				<div [innerHTML]="'modern_description_buyer_product'|static"></div>
+			</div>
+		</div>-->
+		<!-- Buy The Look -->
+		<div light-bg *ngIf="relatedProducts.length > 0">
+			<div padding-horizontal padding-top text-center>
+				<h6 no-margin gray font-weight-700>{{'detail.buy_the_look'|translate}}</h6>
+			</div>
+			<ion-row padding-8 wrap border style="margin:20px 10px">
+				<ion-col padding-8 width-25 *ngFor="let product of relatedProducts" [navPush]="DetailPage" [navParams]="{id:product.id}">
+					<div relative overflow>
+						<img-loader float-left useImg [spinner]="false" *ngIf="product.square_image" src="{{product.square_image}}"></img-loader>
+						<img float-left border *ngIf="product.square_image == ''" src="assets/images/logo-preload.png" />
+						<div absolute bottom right rojo-bg product-sale style="margin-right:0;font-size:1.1rem;" *ngIf="(product.sale_price && product.type!='variable' && product.type!='grouped') || ((product.type=='variable'||product.type=='grouped') && product.on_sale)"
+						 class="sale">
+							<ion-icon name="time" light></ion-icon>
+							<span class="promo" light>PROMO</span>
+							<!--<span light>{{(product.sale_price/product.regular_price*100)-100|number:'1.0-0'}}%</span>-->
+						</div>
+					</div>
+				</ion-col>
+			</ion-row>
+		</div>
+	</div>
+</ion-content>
+
+<ion-footer class="detail-footer">
+	<!--<ion-toolbar no-padding>
+		<ion-row *ngIf="detail.name">
+			<ion-col border-right no-padding>
+				<button ion-button full clear color="dark" (click)="share()" class="disable-hover">
+					<ion-icon icon-big name="icon-share"></ion-icon>
+				</button>
+			</ion-col>
+			<ion-col no-padding>
+				<button ion-button full clear class="disable-hover" color="dark" [navPush]="CommentsPage" [navParams]="{id:detail.id,data:detail.wooconnector_reviews,allow:reviews_allowed}">
+					<ion-icon icon-big name="icon-chat"></ion-icon>
+					<ion-badge absolute>{{detail.rating_count}}</ion-badge>
+				</button>
+			</ion-col>
+
+		</ion-row>
+	</ion-toolbar>-->
+</ion-footer>

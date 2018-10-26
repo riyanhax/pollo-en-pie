@@ -1,0 +1,74 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+
+<ion-content no-padding>
+	<h5 delportal text-center>Tus pedidos pendientes</h5>
+	<ion-row *ngIf="notLoggedIn" align-items-center text-center padding>
+		<ion-col>
+			<p>Aquí mostraremos tus órdenes pendientes en <br /><em>Delportal</em>
+			</p>
+			<button ion-button (click)="gotoLogin()">
+				<span>Iniciar Sesión</span>
+			</button>
+		</ion-col>
+	</ion-row>
+	<div *ngIf="pendingOrders.length > 0 && !notLoggedIn">
+		<ion-row *ngFor="let order of pendingOrders" class="item-order" [ngClass]="order.status" padding relative>
+			<ion-col col-8 no-padding [navPush]="OrderStatusDetailPage" [navParams]="{id:order.id}">
+				<div class="order-id">
+					<b dark>{{'order.id'|translate}} - #{{order.id}}</b>
+					<span class="order-status" *ngIf="order.status == 'processing'" light text-capitalize>{{'order.status.processing'
+						|translate
+						}}</span>
+					<span class="order-status" *ngIf="order.status == 'on-hold'" light text-capitalize>{{'order.status.on_hold'
+						|translate
+						}}</span>
+					<span class="order-status" *ngIf="order.status == 'cancelled'" light text-capitalize>{{'order.status.cancelled'
+						|translate
+						}}</span>
+					<span class="order-status" *ngIf="order.status == 'completed'" light text-capitalize>{{'order.status.completed'
+						|translate
+						}}</span>
+					<span class="order-status" *ngIf="order.status == 'pending'" light text-capitalize>{{'order.status.pending'
+						|translate
+						}}</span>
+					<span class="order-status" *ngIf="order.status == 'refunded'" light text-capitalize>{{'order.status.refunded'
+						|translate
+						}}</span>
+					<span class="order-status" *ngIf="order.status == 'failed'" light text-capitalize>{{'order.status.failed'
+						|translate
+						}}</span>
+				</div>
+				<div>
+					<span green3>{{order.date_created|date:date_format}}</span> - Entregado en {{order.shippings.shipping_address_1}}
+				</div>
+			</ion-col>
+			<ion-col col-4 align-self-center>
+				<div class="product-go-container">
+					<span style="font-size:1.2em;" light-green [innerHTML]="order.total"></span>
+					<ion-icon name="arrow-forward" size="large" float-right style="font-size:1.5em;" delportal></ion-icon>
+				</div>
+			</ion-col>
+		</ion-row>
+	</div>
+	<div *ngIf="noOrder" style="height: 100%">
+		<ion-row align-items-center style="height: 100%">
+			<ion-col text-center>
+				<ion-icon name="checkmark" style="font-size:36px;"></ion-icon><br>
+				<p>{{user.first_name}}, no tienes pedidos pendientes de entregar.</p>
+				<p>¿Te acordaste de algo urgente?</p>
+				<button ion-button (click)="shop()">{{'cart.shop'|translate}}</button>
+			</ion-col>
+		</ion-row>
+	</div>
+</ion-content>

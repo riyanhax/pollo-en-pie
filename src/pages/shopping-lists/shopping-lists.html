@@ -1,0 +1,54 @@
+<ion-header no-border class="dp-head">
+    <ion-toolbar>
+        <button ion-button menuToggle color="gray9">
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-buttons end>
+            <button-search #search></button-search>
+            <button-cart #cart icon="cart"></button-cart>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-row>
+        <ion-col text-center>
+            <h4 delportal>Tus Listas de Compras</h4>
+        </ion-col>
+    </ion-row>
+
+    <ion-list *ngIf="shoppingLists.length > 0" no-margin>
+        <ion-item *ngFor="let shoppingList of shoppingLists" [navPush]="DetailShoppingListPage" [navParams]="{id:shoppingList.id}">
+            <ion-icon name="{{shoppingList.type}}" color="primary" item-left></ion-icon>
+            {{shoppingList.title}}
+            <ion-icon name="arrow-forward" color="primary" float-right></ion-icon>
+        </ion-item>
+
+    </ion-list>
+    <ion-row *ngIf="noResult">
+        <ion-col text-center>
+            No hay listas configuradas.
+        </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!loggedIn">
+        <ion-col text-center>
+            <p>Debes iniciar sesión para ver tus listas.</p>
+            <button ion-button color="delportal" (click)="gotoLogin()">
+                <div float-left width-100 font-weight-500>
+                    Iniciar Sesión
+                </div>
+            </button>
+        </ion-col>
+    </ion-row>
+
+</ion-content>
+<ion-footer *ngIf="loggedIn">
+    <ion-toolbar>
+        <ion-buttons text-center>
+            <ion-col>
+                <button ion-button bg-primary (click)="addNewList()" class="disable-hover">
+                    Crear Nueva Lista
+                </button>
+            </ion-col>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

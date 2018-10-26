@@ -1,0 +1,25 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<ion-slides #slide_update *ngIf="slides && 0 < slides.length" class="slides-home" pager="true" loop="true" autoplay="3000"
+	 dir="{{display}}">
+		<ion-slide *ngFor="let slide of slides" tappable (click)="openLink(slide.url)">
+			<!--<img [src]="slide.slider_images" float-left />-->
+			<img-loader useImg float-left [src]="slide.slider_images"></img-loader>
+		</ion-slide>
+	</ion-slides>
+	<div padding-horizontal padding-top text-uppercase dark (swipe)="onSwipeContent($event)">
+		<b>¡Aprovecha nuestras ofertas!</b>
+	</div>
+
+</ion-content>

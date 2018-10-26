@@ -1,0 +1,24 @@
+page-thanks {
+	.header{
+		.toolbar {
+			min-height: 47px !important;
+		}
+		.toolbar-background{background:#00A43E;}
+		.title{padding:0}
+		.toolbar-title{
+			font-size:1.5rem;
+			.icon{font-size:1.5rem;};
+			
+		}
+		ion-toolbar{
+			.toolbar-title{font-size:1.3rem;}
+		}
+	}
+	.text-order{
+		margin:0 auto;
+		padding-top:30px;
+
+		h5{border-bottom:solid 1px #DDD;}
+	}
+	.header-simulate{border-bottom:solid 2px #CCC;}
+}

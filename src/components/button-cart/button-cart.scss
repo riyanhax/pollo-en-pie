@@ -1,0 +1,27 @@
+button-cart {
+	display:inline-block;
+	[ion-button]{margin:0}
+	width:36px;
+	height:32px;
+	
+	ion-badge{
+		white-space:nowrap;
+		overflow:hidden;
+		text-overflow:ellipsis;
+		padding:0 1px;
+		border-radius:10px!important;
+		line-height:17px;
+		font-size:1rem;
+		top:0;
+		right:0;
+		min-width:15px;
+		min-height:15px;
+	}
+	.info-cart{
+		font-size:90%;
+		line-height:120%;
+	}
+	background:url(../assets/images/cart_h.png) no-repeat;
+	background-size: 50% 50%;
+	background-position: center center;
+}

@@ -1,0 +1,51 @@
+page-login {
+	.header{
+		.toolbar{
+			.toolbar-background{
+				background:none;
+				border:none;
+			}
+			.back-button, .toolbar-title{color:color($colors, light, base);}
+		}
+		&:after{display:none}
+	}
+	.content{
+		background:url(../assets/images/login-bg.png);
+		background-size:cover;
+		.login-form{
+			.item{
+				.icon{
+					-webkit-align-self:flex-end;
+					-ms-flex-item-align:flex-end;
+					align-self:flex-end;
+					font-size:20px;
+					line-height:28px;
+					margin:0;
+				}
+				.wrong-password{
+					span{line-height:18px}
+				}
+			}
+			.label{color: #FFF;}
+			input {color:#FFF;}
+			margin-bottom:1em;
+			.input-wrapper{background:rgba(0,0,0,0.44);margin-bottom:1em;border-radius: 10px;}
+			.item-input, .item-inner{border:none !important;box-shadow: none!important;}
+			.text-input::-moz-placeholder {
+				color: rgba(255,255,255,0.5);
+				text-align:center;
+			  }
+			  
+			  .text-input:-ms-input-placeholder {
+				color: rgba(255,255,255,0.5);
+				text-align:center;
+			  }
+			  
+			  .text-input::-webkit-input-placeholder {
+				text-indent: 0;
+				color: rgba(255,255,255,0.5);
+				text-align:center;
+			  }
+		}
+	}
+}

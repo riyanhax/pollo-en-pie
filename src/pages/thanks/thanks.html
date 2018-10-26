@@ -1,0 +1,53 @@
+<ion-content>
+	<ion-row padding>
+		<ion-col col-2>
+			&nbsp;
+		</ion-col>
+		<ion-col col-8>
+			<img src="assets/images/logo_t.png" />
+		</ion-col>
+		<ion-col col-2>
+			&nbsp;
+		</ion-col>
+	</ion-row>
+	<ion-row class="header-simulate" padding>
+		<ion-col text-center>
+			<h2 delportal>Su pedido ha sido recibido</h2>
+			<p text-center rojo>{{order.date_created|date:date_format}}</p>
+			<p>En breves momentos recibirás por correo nuestra confirmación y tiempo de entrega </p>
+		</ion-col>
+	</ion-row>
+	<ion-row padding>
+		<ion-col class="text-order">
+			<h2 dark444 text-center>Detalles del Pedido</h2>
+			<h5 delportal>Tu pedido será entregado en</h5>
+			<p [innerHTML]='order.delivery_address'></p>
+			<h5 delportal >Persona que recibe</h5>
+			<p [innerHTML]='order.delivery_contact'></p>
+			<h5 delportal>Método de Pago Utilizado</h5>
+			<p [innerHTML]='order.payment_method'></p>
+			<h5 delportal>Número de Autorización</h5>
+			<p [innerHTML]='order.transaction_id'></p>
+			<h5 delportal>Total de la Compra</h5>
+			<p [innerHTML]='order.amount'></p>
+			<h5 delportal>Número de orden</h5>
+			<p [innerHTML]='order.order_number'></p>
+		</ion-col>
+	</ion-row>
+	<ion-row padding>
+		<ion-col col-1></ion-col>
+		<ion-col text-center>
+			<h2 delportal>Estado del Pedido</h2>
+			<img src="assets/images/received.jpg" />
+			<p>Tu pedido está siendo atendido, podrás revisar el estado del mismo hasta que sea entregado.</p>
+			<button ion-button block [navPush]="OrderStatusDetailPage" [navParams]="order.id">Ir a Seguimiento</button>
+		</ion-col>
+		<ion-col col-1></ion-col>
+	</ion-row>
+	<ion-row padding text-center>
+		<ion-col>
+			<p>&iquest;Se te olvid&oacute; algo?</p>
+			<button ion-button (click)="goto(StorePage)">Nuevo Pedido</button>
+		</ion-col>
+	</ion-row>
+</ion-content>

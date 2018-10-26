@@ -1,0 +1,79 @@
+<!--
+  Generated template for the CreditCardPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header no-border class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+	<ion-navbar>
+		<ion-title>Lista de Tarjetas</ion-title>
+	</ion-navbar>
+</ion-header>
+<ion-content>
+	<h5 delportal text-center>Ingresar Nueva Tarjeta</h5>
+	<ion-list class="edit-form" no-margin padding-horizontal>
+		<form [formGroup]="formCreditCard">
+			<ion-item bg-transparent no-padding>
+				<ion-label stacked>Referencia (ejemplo, "Mi Tarjeta") *</ion-label>
+				<ion-input type="text" formControlName="title" clearInput></ion-input>
+			</ion-item>
+			<ion-row radio-group formControlName="type">
+				<ion-col>
+					<ion-item>
+						<ion-label><img src="assets/images/visa.jpg" /></ion-label>
+						<ion-radio value="VISA"></ion-radio>
+					</ion-item>
+				</ion-col>
+				<ion-col>
+					<ion-item>
+						<ion-label><img src="assets/images/mastercard.jpg" /></ion-label>
+						<ion-radio value="MC"></ion-radio>
+					</ion-item>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-10>
+					<ion-item bg-transparent no-padding>
+						<ion-label stacked>Número de Tarjeta</ion-label>
+						<ion-input type="tel" ccNum formControlName="number" autocomplete="cc-number" clearInput [disabled]="this.id != 0"></ion-input>
+					</ion-item>
+				</ion-col>
+				<ion-col col-2 align-self-center>
+					<button ion-button float-right (click)="scanCard()" delportal>
+						<ion-icon name="camera"></ion-icon>
+					</button>
+				</ion-col>
+			</ion-row>
+
+			<ion-item bg-transparent no-padding>
+				<ion-label stacked>Fecha de Expiración</ion-label>
+				<ion-input type="tel" type="tel" formControlName="expDate" autocomplete="cc-exp" id="cc-exp" ccExp clearInput
+				 placeholder="MM / YYYY"></ion-input>
+			</ion-item>
+			<ion-item mode="md" bg-transparent no-padding>
+				<ion-label>Predeterminada?</ion-label>
+				<ion-checkbox formControlName="is_default"></ion-checkbox>
+			</ion-item>
+
+		</form>
+	</ion-list>
+
+
+	<ion-row>
+		<ion-col text-center>
+			<button ion-button (click)="save()">
+				Guardar Cambios
+			</button>
+		</ion-col>
+	</ion-row>
+
+</ion-content>

@@ -1,0 +1,21 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <button ion-button menuToggle color="gray9">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-buttons end>
+      <button-search #search></button-search>
+      <button-cart #cart icon="cart"></button-cart>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <div [innerHTML]="'modern_description_privacy_policy'|static"></div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <footer-tabs></footer-tabs>
+  </ion-toolbar>
+</ion-footer>

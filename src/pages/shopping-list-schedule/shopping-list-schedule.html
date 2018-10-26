@@ -1,0 +1,91 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+	<ion-navbar>
+		<ion-title>Regresar</ion-title>
+	</ion-navbar>
+</ion-header>
+<ion-content padding>
+	<h5 light-green *ngIf="shoppingList">Lista "{{shoppingList.title}}"</h5>
+	<ion-list>
+		<form [formGroup]="scheduleForm">
+			<ion-item>
+				<ion-label floating>Frecuencia</ion-label>
+				<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate"
+				 [okText]="'general.ok'|translate" type="text" formControlName="recurrence">
+					<ion-option [value]="daily">
+						<span>Diario</span>
+					</ion-option>
+					<ion-option [value]="weekly">
+						<span>Semanal</span>
+					</ion-option>
+					<ion-option [value]="monthly">
+						<span>Mensual</span>
+					</ion-option>
+				</ion-select>
+			</ion-item>
+			<ion-item>
+				<ion-label floating>Intervalo (cada <em>n</em>)</ion-label>
+				<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate"
+				 [okText]="'general.ok'|translate" type="text" formControlName="recurrence_number">
+					<ion-option [value]="1">
+						<span>1</span>
+					</ion-option>
+					<ion-option [value]="2">
+						<span>2</span>
+					</ion-option>
+					<ion-option [value]="3">
+						<span>3</span>
+					</ion-option>
+				</ion-select>
+			</ion-item>
+			<ion-item>
+				<ion-label floating>Día de la semana</ion-label>
+				<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate"
+				 [okText]="'general.ok'|translate" type="text" formControlName="weekdays">
+					<ion-option [value]="sunday">
+						<span>Domingo</span>
+					</ion-option>
+					<ion-option [value]="monday">
+						<span>Lunes</span>
+					</ion-option>
+					<ion-option [value]="tuesday">
+						<span>Martes</span>
+					</ion-option>
+					<ion-option [value]="wednesday">
+						<span>Miércoles</span>
+					</ion-option>
+					<ion-option [value]="thursday">
+						<span>Jueves</span>
+					</ion-option>
+					<ion-option [value]="friday">
+						<span>Viernes</span>
+					</ion-option>
+					<ion-option [value]="saturday">
+						<span>Sábado</span>
+					</ion-option>
+				</ion-select>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-datetime placeholder="Fecha Desde" displayFormat="DD/MM/YYYY" formControlName="startDate" doneText="Ok"
+				 cancelText="Cancelar" [min]="today" max="2020-12-31"></ion-datetime>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-datetime placeholder="Fecha Hasta" displayFormat="DD/MM/YYYY" formControlName="endDate" doneText="Ok"
+				 cancelText="Cancelar" [min]="tomorrow" max="2020-12-31"></ion-datetime>
+			</ion-item>
+		</form>
+	</ion-list>
+	<div text-center>
+		<button ion-button text-center (click)="save()" [disabled]="scheduleForm.invalid">
+			<span>Guardar</span>
+		</button>
+	</div>
+</ion-content>

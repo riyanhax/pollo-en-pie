@@ -1,0 +1,53 @@
+<!--
+  Generated template for the UserAddressesPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header no-border class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+	<ion-navbar>
+		<ion-title>Perfil</ion-title>
+	</ion-navbar>
+</ion-header>
+<ion-content>
+	<h5 delportal text-center>Tus direcciones de env&iacute;o</h5>
+	<ion-list class="adressesList" *ngIf="!noResult" padding>
+		<ion-item-sliding *ngFor="let address of userAddresses">
+			<ion-item [navPush]="AddressFormPage" [navParams]="{id: address.id}">
+				<h3 green2><span *ngIf='address.is_default'>
+						<ion-icon name="heart"></ion-icon>&nbsp;&nbsp;
+					</span>{{address.title}}</h3>
+				<p>{{address.shipping_line_1}}</p>
+			</ion-item>
+			<ion-item-options side="right">
+				<button *ngIf='!address.is_default' ion-button (click)="setDefault(address.id)" color="delportal">
+					<ion-icon large name="heart"></ion-icon>
+				</button>
+				<button ion-button (click)="delete(address.id)" color="rojo">
+					<ion-icon name="trash"></ion-icon>
+				</button>
+			</ion-item-options>
+		</ion-item-sliding>
+	</ion-list>
+	<ion-row *ngIf="noResult">
+		<ion-col text-center>
+			No tienes direcciones de envío predefinidas.
+		</ion-col>
+	</ion-row>
+	<ion-row>
+		<ion-col text-center>
+			<button ion-button [navPush]="AddressFormPage" [navParams]="{id:0}">
+				Agregar Nueva
+			</button>
+		</ion-col>
+	</ion-row>
+</ion-content>

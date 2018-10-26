@@ -1,0 +1,53 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+    <ion-toolbar>
+        <button ion-button menuToggle color="gray9">
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-buttons end>
+            <button-search #search></button-search>
+            <button-cart #cart icon="cart"></button-cart>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content padding>
+    <div *ngIf="isLoggedIn">
+        <ion-row>
+            <ion-col>
+                <div class="barcode-container">
+                    <img src="assets/images/card.png" />
+                    <div class="barcode-img" absolute text-center>
+                        <img src="assets/images/barcode-sample.png" />
+                    </div>
+                </div>
+            </ion-col>
+        </ion-row>
+        <ion-row align-items-center text-center>
+            <ion-col>
+                <h2 green2>¡Hola {{user.first_name}}!</h2>
+                <p>Gracias por comprar con nosotros
+                    <br />Aprovecha los beneficios de tu tarjeta
+                    <span style="font-style: italic;">Delportal</span>
+                </p>
+            </ion-col>
+        </ion-row>
+        <ion-row align-items-center text-center>
+            <ion-col>
+                <h2 green2>Tu monedero
+                    <em>Delportal</em>
+                </h2>
+                <p>Tu saldo es de
+                    <span font-110 light-green font-weight-700>$4.32</span>
+                </p>
+            </ion-col>
+        </ion-row>
+    </div>
+    <div *ngIf="!isLoggedIn" height-100>
+        <ion-row height-100 align-items-center>
+            <ion-col text-center>
+                Debes iniciar sesión para ver tu tarjeta y monedero.
+            </ion-col>
+        </ion-row>
+    </div>
+
+
+</ion-content>

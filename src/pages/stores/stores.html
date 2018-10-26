@@ -1,0 +1,41 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<div id="map_canvas_stores" style="width:100%;height: 60vw;"></div>
+
+	<ion-scroll scrollY="true" zoom="false" style="height: 95vw">
+		<div padding>
+			<ion-row *ngFor="let store of storesList" padding-8-vertical border-bottom (click)="setCenter(store)">
+				<ion-col col-2 align-self-center text-center>
+					<img src="assets/images/marker_red.png" />
+				</ion-col>
+				<ion-col col-10 class="store-desc">
+					<h2 font-110 green2 [innerHtml]='store.name'></h2>
+					<span dark555 [innerHtml]='store.address'></span>
+					<br />
+					<span dark555>
+						<ion-icon name="call"></ion-icon>
+						<a href="tel:{{store.phone}}" [innerHtml]="store.phone"></a>
+					</span>
+					<br />
+					<span light-green>Horario de Atención:
+						<span [innerHtml]='store.opening'></span> -
+						<span [innerHtml]='store.closing'></span>
+					</span>
+					<br />
+				</ion-col>
+			</ion-row>
+		</div>
+	</ion-scroll>
+
+</ion-content>

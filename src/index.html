@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ionic App</title>
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Del Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <meta name="msapplication-tap-highlight" content="no">
 
@@ -16,8 +16,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
   <!-- cordova.js required for cordova apps (remove if not needed) -->
-  <script src="cordova.js"></script>
-
+  
+  <script src="assets/js/settings.js"></script>
+  
   <!-- un-comment this code to enable service worker
   <script>
     if ('serviceWorker' in navigator) {
@@ -26,18 +27,30 @@
         .catch(err => console.error('Error', err));
     }
   </script>-->
-
+  <link href="assets/fonts/vspfonts.css" rel="stylesheet">
+  <link href="assets/fonts/fontello.css" rel="stylesheet">
+  <link href="assets/fonts/lato.css" rel="stylesheet">
+  <link href="assets/fonts/din-alternate.css" rel="stylesheet">
+  <link href="assets/fonts/roboto-condensed.css" rel="stylesheet">
+  <link href="assets/fonts/montserrat.css" rel="stylesheet">
   <link href="build/main.css" rel="stylesheet">
-
+  
 </head>
 <body>
-
+ 
   <!-- Ionic's root component and where the app will load -->
   <ion-app></ion-app>
 
   <!-- The polyfills js is generated during the build process -->
+  
   <script src="build/polyfills.js"></script>
-
+  <script src="cordova.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    /*document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+        navigator.splashscreen.hide();
+    }*/
+</script>
   <!-- The vendor js is generated during the build process
        It contains all of the dependencies in node_modules -->
   <script src="build/vendor.js"></script>

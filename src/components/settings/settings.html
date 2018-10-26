@@ -1,0 +1,18 @@
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+<ion-content>
+	<button menuClose ion-item detail-none color="light" (click)="changeTextSize()">
+		<ion-icon name="icon-font" item-left></ion-icon>
+		<ion-label>{{'account.text_size.title'|translate}}</ion-label>
+		<ion-note item-right text-capitalize *ngIf="data.text">{{'account.text_size.option.'+data.text|translate}}</ion-note>
+	</button>
+</ion-content>

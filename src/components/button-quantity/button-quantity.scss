@@ -1,0 +1,28 @@
+button-quantity {
+	display:inline-block;
+	overflow:hidden;
+	.button-quantity-inner{
+		align-items: center;
+		
+		.button{
+			width:20px;
+			height:20px;
+			padding:0;
+			background: #477E33;
+			border-radius: 100%;
+			color:#fff;
+			font-size:20px;
+		}
+		.value{
+			border:none;
+			width:30px;
+			height:30px;
+			margin:0 5px;
+			-moz-appearance:none;
+			-ms-appearance:none;
+			-webkit-appearance:none;
+			appearance:none;
+			background:transparent;
+		}
+	}
+}
