@@ -45,7 +45,7 @@ export class BillingAddressPage {
 			address_country: ['EC'],
 			email: ['', Validators.compose([Validators.required, CoreValidator.isEmail])],
 			phone: ['', Validators.required],
-			is_default: [false]
+			is_default: ['off']
 		});
 
 		this.storage.get('login').then(val => {
@@ -87,6 +87,33 @@ export class BillingAddressPage {
 	save() {
 		this.dp.saveBillingAddress(this.login, this.formBillingAddress.value).then(data => {
 			this.navCtrl.pop();
+		});
+	}
+
+	checkCustomer(){
+		this.dp.getCustomerData(this.formBillingAddress.get('document_number').value).then((customer) => {
+			if (customer['id'] > 0){
+                let names = customer['name'].split(" ",1);
+				this.formBillingAddress.patchValue({
+                    first_name: names[0],
+                    last_name: names[1],
+					email: customer['email'],
+					address_line_1: customer['address'],
+					address_city: customer['city'],
+					phone: customer['phone']
+					/*
+					shipping_first_name: this.data["shipping_first_name"],
+					shipping_last_name: this.data["shipping_last_name"],
+					shipping_company: this.data["shipping_company"],
+					shipping_address_1: this.data["shipping_address_1"],
+					shipping_address_2: this.data["shipping_address_2"],
+					shipping_city: this.data["shipping_city"],
+					shipping_country: this.data["shipping_country"],
+					shipping_state: this.data["shipping_state"],
+					shipping_postcode: this.data["shipping_postcode"]*/
+				});
+			}
+			
 		});
 	}
 

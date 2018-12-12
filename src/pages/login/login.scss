@@ -24,11 +24,12 @@ page-login {
 				}
 				.wrong-password{
 					span{line-height:18px}
-				}
+                }
+                .item-inner{padding-right: 0;}
 			}
 			.label{color: #FFF;}
 			input {color:#FFF;}
-			margin-bottom:1em;
+			margin:3em 0;
 			.input-wrapper{background:rgba(0,0,0,0.44);margin-bottom:1em;border-radius: 10px;}
 			.item-input, .item-inner{border:none !important;box-shadow: none!important;}
 			.text-input::-moz-placeholder {
@@ -47,5 +48,13 @@ page-login {
 				text-align:center;
 			  }
 		}
-	}
+    }
+    .logoImg{
+        width:75%;
+        max-width:480px;
+        min-height:138px;
+        max-height: 276px;
+        background:url(../assets/images/logo2.png) no-repeat top left;
+        background-size:cover;
+    }
 }

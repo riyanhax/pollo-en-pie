@@ -19,17 +19,19 @@ declare var date_format: string;
 	providers: [Core]
 })
 export class DetailOrderPage {
+    @ViewChild('cart') buttonCart;
 	DetailPage = DetailPage;
 	id: Number; login: Object; data: Object;
 	date_format: string = date_format;
 	@ViewChild(Content) content: Content;
-	trans: Object;
+    trans: Object;
+    cartArray: Object = {};
 
 	constructor(
 		private navCtrl: NavController,
 		navParams: NavParams,
 		private http: Http,
-		storage: Storage,
+		public storage: Storage,
 		private core: Core,
 		translate: TranslateService,
 		private Toast: Toast,
@@ -100,8 +102,60 @@ export class DetailOrderPage {
 		});
 		alert.present();
 	}
-	doRefresh(refresher) {
-		this.getData();
-		refresher.complete();
+	
+    repeatOrder(){
+        let productsToCart: Object[] = [];
+		for (let index = 0; index < this.data['line_items'].length; index++) {
+			let dataP: any = {};
+			const detail = this.data['line_items'][index];
+			let idCart = detail["id"];
+			dataP.idCart = idCart;
+			dataP.id = detail["id"];
+			dataP.name = detail["name"];
+			if (detail["medium_image"] != "")
+                dataP.images = detail["medium_image"];
+            dataP.regular_price = detail["regular_price"];
+			dataP.sale_price = detail["sale_price"];
+			dataP.price = detail["price"];
+			dataP.quantity = detail['qty'];
+			dataP.sold_individually = detail['sold_individually'];
+			dataP.pvp = detail['pvp'];
+			dataP.tax = detail['tax'];
+			productsToCart = productsToCart.concat(dataP);
+		}
+
+		this.storage.get('cart').then((val) => {
+			if (!val) val = {};
+			for (let index = 0; index < productsToCart.length; index++) {
+				const element = productsToCart[index];
+
+				if (val[element['id']]) {
+					val[element['id']]['quantity'] += element['quantity'];
+				} else {
+					val[element['id']] = element;
+				}
+
+			}
+
+			this.storage.set('cart', val).then(() => {
+				this.checkCart();
+				this.buttonCart.update();
+				this.Toast.showShortBottom(this.trans["add"]).subscribe(
+					toast => { },
+					error => { console.log(error); }
+				);
+			});
+
+		});
+    }
+
+    checkCart() {
+		this.storage.get('cart').then(val => {
+			let cartNew = Object.assign([], val);
+			this.cartArray = {};
+			cartNew.forEach(productCart => {
+				this.cartArray[productCart['id']] = productCart['id'];
+			});
+		});
 	}
 }

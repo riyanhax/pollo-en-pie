@@ -80,7 +80,7 @@ export class ProfileMenuPage {
 				{
 					text: "Sí",
 					handler: () => {
-						this.storageMul.remove(['login','user','userShoppingLists', 'userDeliveryAddresses', 'userBillingAddresses','userCards','workingDeliveryAddressId']).then(() => { 
+						this.storageMul.remove(['login','user','userShoppingLists', 'userDeliveryAddresses', 'userBillingAddresses','userCards','workingDeliveryAddress']).then(() => { 
 							this.navCtrl.setRoot(DeliveryAddressPage);
 							this.events.publish('loggedOut');
 						 });

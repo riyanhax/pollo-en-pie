@@ -1,6 +1,5 @@
-<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+<ion-header no-border class="dp-head">
 	<ion-toolbar>
-		<ion-title>Delportal</ion-title>
 		<button ion-button menuToggle color="gray9">
 			<ion-icon name="menu"></ion-icon>
 		</button>
@@ -11,39 +10,33 @@
 	</ion-toolbar>
 </ion-header>
 <ion-content>
-	<ion-row>
-		<ion-col text-center>
-			<h4 delportal>
-				<span *ngIf="user != null">Hola {{user.first_name}},<br /></span>
-				<span font-90>¿Donde vamos a entregar tu pedido?</span>
-			</h4>
-			<p>Selecciona primero la dirección de entrega de tu pedido</p>
-		</ion-col>
-	</ion-row>
-	<div>
-		<ion-toolbar>
-			<ion-segment [(ngModel)]="type" (ionChange)="setMap()">
-				<ion-segment-button value="addresses">
-					Direcciones
-				</ion-segment-button>
-				<ion-segment-button value="map">
-					Ubicaci&oacute;n Mapa
-				</ion-segment-button>
-			</ion-segment>
-		</ion-toolbar>
-		<div [ngSwitch]="type" no-padding>
-			<ion-row *ngSwitchCase="'addresses'" [attr.align-items-end]="isLoggedIn == false ? true : null">
-				<ion-col *ngIf="isLoggedIn == true">
-
+	<ion-toolbar>
+		<ion-segment [(ngModel)]="type" (ionChange)="setMap()">
+			<ion-segment-button value="addresses">
+				Direcciones
+			</ion-segment-button>
+			<ion-segment-button value="map">
+				Ubicaci&oacute;n Mapa
+			</ion-segment-button>
+		</ion-segment>
+	</ion-toolbar>
+	<div [style.display]="type == 'addresses' ? 'block' : 'none'">
+		<ion-row>
+			<ion-col>
+				<div text-center>
+					<h4 delportal>
+						<span *ngIf="user != null">Hola {{user.first_name}},<br /></span>
+						<span font-90>¿Donde entregamos tu pedido?</span>
+                    </h4>
+                    <img *ngIf="userAddresses.length == 0" src="assets/images/big_marker.jpg" style="margin:40px auto;display:block;width:90px;" />
+				</div>
+				<div *ngIf="isLoggedIn == true">
 					<!--<p text-center></p>-->
 					<ion-list class="adressesList" *ngIf="userAddresses.length > 0" radio-group [(ngModel)]="selectedAddressId">
-						<ion-list-header>
-							Elige la dirección a la que será enviado tu pedido.
-						</ion-list-header>
 						<ion-item *ngFor="let address of userAddresses">
 							<ion-label>
 								<h3 green2>{{address.title}}</h3>
-								<p>{{address.shipping_line_1}}</p>
+								<p>{{address.shipping_address_line_1}}</p>
 							</ion-label>
 							<ion-radio color="green2" item-right [value]="address.id"></ion-radio>
 						</ion-item>
@@ -55,47 +48,47 @@
 							</button>
 						</ion-col>
 						<ion-col>
-							<button ion-button (click)="goto(addressFormPage)">
+							<button ion-button (click)="launchLocationPage()">
 								<span>Agregar Dirección</span>
 							</button>
 						</ion-col>
-
 					</ion-row>
 					<div *ngIf="userAddresses.length == 0" text-center>
-						<p>Aún no has registrado ninguna dirección de envío.</p>
-						<button ion-button (click)="goto(addressFormPage)">
+                        <p>Aún no has configurado ninguna dirección de entrega.</p>
+                        <img src="assets/images/big_marker.jpg" style="margin:40px auto;display:block;width:90px;" />
+						<button ion-button (click)="launchLocationPage()">
 							<span>Agregar Dirección</span>
 						</button>
 					</div>
-				</ion-col>
-				<ion-col *ngIf="isLoggedIn == false" text-center align-self-end>
-					<p>Aún no has registrado ninguna dirección de envío.</p>
-					<button ion-button (click)="goto(addressFormPage)">
-						<span>Agregar Dirección</span>
+				</div>
+				<div *ngIf="isLoggedIn == false" text-center>
+					<button ion-button (click)="launchLocationPage()">
+						<span>Elige tu dirección</span>
 					</button>
-				</ion-col>
-
-			</ion-row>
-			<ion-row [style.display]="type == 'map' ? 'block' : 'none'">
-				<ion-col>
-					<div class="mapContainer">
-						<div id="map_canvas"></div>
-						<div class="map-note" padding-8>
-							Ubica en el mapa la direcci&oacute;n donde deseas recibir tu pedido.
-							<br /> Esta ubicaci&oacute;n será usada como tu direcci&oacute;n primaria
-						</div>
+				</div>
+			</ion-col>
+		</ion-row>
+	</div>
+	<div [style.display]="type == 'map' ? 'block' : 'none'">
+		<ion-row>
+			<ion-col>
+				<div class="mapContainer">
+					<div id="map_canvas"></div>
+					<div class="map-note" padding-8>
+						Ubica en el mapa la direcci&oacute;n donde deseas recibir tu pedido.
+						<br /> Esta ubicaci&oacute;n será usada como tu direcci&oacute;n primaria
 					</div>
-					<div padding *ngIf="reverseAddress != ''">
-						<p dark text-center>Tu pedido será enviado a la siguiente direcci&oacute;n:</p>
-						<ion-textarea rows="3" margin-auto dark class="address-indicator" [(ngModel)]="reverseAddress"></ion-textarea>
-					</div>
-					<p text-center>
-						<button ion-button [disabled]="!isValidAddress" (click)="confMap()">
-							<span>{{mapBtnTxt}}</span>
-						</button>
-					</p>
-				</ion-col>
-			</ion-row>
-		</div>
+				</div>
+				<div padding *ngIf="reverseAddress != ''">
+					<p dark text-center>Tu pedido será enviado a la siguiente direcci&oacute;n:</p>
+					<ion-textarea rows="3" margin-auto dark class="address-indicator" [(ngModel)]="reverseAddress"></ion-textarea>
+				</div>
+				<p text-center>
+					<button ion-button [disabled]="!isValidAddress" (click)="confMap()">
+						<span>{{mapBtnTxt}}</span>
+					</button>
+				</p>
+			</ion-col>
+		</ion-row>
 	</div>
 </ion-content>

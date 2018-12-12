@@ -13,12 +13,6 @@
 	</ion-navbar>
 </ion-header>
 <ion-content>
-	<!-- Refresh -->
-	<ion-refresher (ionRefresh)="doRefresh($event)">
-		<ion-refresher-content [pullingIcon]="'general.pullingIcon'|translate" [pullingText]="'general.pullToRefresh'|translate"
-		 [refreshingSpinner]="'general.refreshingSpinner'|translate" [refreshingText]="'general.refreshing'|translate">
-		</ion-refresher-content>
-	</ion-refresher>
 	<h4 *ngIf="data" delportal>Pedido #{{data.id}}</h4>
 	<!-- Status -->
 	<div padding text-left relative *ngIf="data" class="order-status" [ngClass]="data.status">
@@ -151,10 +145,11 @@
 				<ion-list light-bg class="list-product" padding-vertical no-margin>
 					<ion-row *ngFor="let product of data.line_items" no-padding relative class="item-product">
 						<ion-col width-25 no-padding [navPush]="DetailPage" [navParams]="{id:product.product_id}">
-							<img-loader useImg [spinner]="false" float-left *ngIf="product.images.wooconnector_medium" src="{{product.images.wooconnector_medium}}"></img-loader>
+							<!--<img-loader useImg [spinner]="false" float-left *ngIf="product.images.wooconnector_medium" src="{{product.images.wooconnector_medium}}"></img-loader>-->
+							<img float-left *ngIf="product.images.wooconnector_medium" src="{{product.images.wooconnector_medium}}" />
 							<img *ngIf="!product.images.wooconnector_medium" src="assets/images/no-image.png">
 						</ion-col>
-						<ion-col no-padding margin-horizontal [navPush]="DetailPage" [navParams]="{id:product.id}">
+						<ion-col no-padding margin-horizontal [navPush]="DetailPage" [navParams]="{id:product.product_id}">
 							<span class="capFirst" text-lowercase dark [innerHTML]="product.name"></span>
 							<ion-row wrap padding-4-vertical>
 								<ion-col width-50 no-padding *ngFor="let attr of product.meta">
@@ -208,6 +203,11 @@
 	<div padding *ngIf="data && (data.status=='on-hold' || data.status=='pending')" overflow>
 		<button ion-button block (click)="changeStatus()" no-margin class="button-cancel">
 			<span>{{'detailOrder.cancel_order'|translate}}</span>
+		</button>
+    </div>
+    <div padding *ngIf="data && (data.status=='completed')" overflow>
+		<button ion-button block (click)="repeatOrder()" no-margin>
+			<span>Repite tu orden</span>
 		</button>
 	</div>
 </ion-content>

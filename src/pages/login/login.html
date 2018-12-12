@@ -4,10 +4,11 @@
 	</ion-navbar>
 </ion-header>
 <ion-content padding>
-	<ion-row center ion-fixed width-100 height-100 align-items-end class="bgLogin">
+	<ion-row center width-100 height-100 class="bgLogin">
 		<ion-col col-1></ion-col>
 		<ion-col padding>
-			<ion-list class="login-form" no-margin>
+            <div class="logoImg"></div>
+			<ion-list class="login-form">
 				<form [formGroup]="formLogin">
 					<ion-item mode="md" bg-transparent no-padding>
 						<ion-input dir="{{display_mode}}" formControlName="username" placeholder="{{'general.username'|translate}}" clearInput text-center no-padding></ion-input>
@@ -15,22 +16,20 @@
 					<ion-item bg-transparent no-padding>
 						<ion-input dir="{{display_mode}}" type="password" formControlName="password" (focus)="wrong=false" placeholder="{{'general.password'|translate}}"
 						 clearInput text-center no-padding></ion-input>
-
 					</ion-item>
 				</form>
 			</ion-list>
 			<div *ngIf="wrong" margin>
 				<ion-icon *ngIf="wrong" color="danger" item-right name="information-circle"></ion-icon>
 				<span light *ngIf="wrong">{{'login.wrong'|translate}}</span>
-
 			</div>
-			<button margin-auto ion-button (click)="login()" [disabled]="formLogin.invalid">
-				<span>{{'login.title'|translate}}</span>
+			<button margin-auto ion-button delportal-bg  full (click)="login()" [disabled]="formLogin.invalid">
+				<span light>{{'login.title'|translate}}</span>
 			</button>
-			<div overflow style="margin-top:1em;" text-center>
-				<button ion-button text-capitalize font-110 clear class="disable-hover" color="light" (click)="forgot()">
-					<span style="text-decoration:underline;">{{'login.forgot_password'|translate}}</span>
-				</button>
+            <div overflow style="margin-top:1em;" text-center>
+                <a href="#" font-110 clear class="disable-hover"  color="light" (click)="forgot()">
+                    <span style="text-decoration:underline;" light>Olvidé mi Contraseña</span>
+                </a>
 			</div>
 			<ng-template #facebookLogin>
 				<button ion-button icon-right (click)="fbLogin()">

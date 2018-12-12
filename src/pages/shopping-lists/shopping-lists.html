@@ -10,23 +10,28 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-row>
-        <ion-col text-center>
-            <h4 delportal>Tus Listas de Compras</h4>
-        </ion-col>
-    </ion-row>
 
-    <ion-list *ngIf="shoppingLists.length > 0" no-margin>
-        <ion-item *ngFor="let shoppingList of shoppingLists" [navPush]="DetailShoppingListPage" [navParams]="{id:shoppingList.id}">
-            <ion-icon name="{{shoppingList.type}}" color="primary" item-left></ion-icon>
-            {{shoppingList.title}}
-            <ion-icon name="arrow-forward" color="primary" float-right></ion-icon>
-        </ion-item>
+    <h5 delportal text-center>Tus Listas de Compras</h5>
 
+    <ion-list class="addresesList" *ngIf="!noResult" no-margin>
+        <ion-item-sliding *ngFor="let shoppingList of shoppingLists">
+            <ion-item [navPush]="DetailShoppingListPage" [navParams]="{id:shoppingList.id}">
+                <ion-icon name="{{shoppingList.type}}" color="primary" item-left></ion-icon>
+                {{shoppingList.title}}
+            </ion-item>
+            <ion-item-options side="right">
+                <button ion-button (click)="rename(shoppingList.id)" color="delportal">
+                    <ion-icon name="create"></ion-icon>
+                </button>
+                <button ion-button (click)="delete(shoppingList.id)" color="rojo">
+                    <ion-icon name="trash"></ion-icon>
+                </button>
+            </ion-item-options>
+        </ion-item-sliding>
     </ion-list>
     <ion-row *ngIf="noResult">
         <ion-col text-center>
-            No hay listas configuradas.
+            Aún No tienes listas de compras.
         </ion-col>
     </ion-row>
     <ion-row *ngIf="!loggedIn">

@@ -3,14 +3,11 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 
 import { Toast } from '@ionic-native/toast';
-import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
-import { File } from '@ionic-native/file';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Observable } from 'rxjs/Observable';
 
 
 
-declare var wordpress_url: string;
 declare var wordpress_per_page: number;
 
 @Injectable()
@@ -21,7 +18,6 @@ export class DelportalDb {
 	constructor(private storage: Storage,
 		public http: HttpClient,
 		public toast: Toast,
-		private transfer: FileTransfer, private file: File,
 		private sqlite: SQLite
 	) {
 
@@ -82,15 +78,7 @@ export class DelportalDb {
 
 	downloadProductsFile(serverCatalogVersion) {
 		
-		let fileTransfer: FileTransferObject = this.transfer.create();
 		
-		return fileTransfer.download(wordpress_url + '/wp-content/uploads/delportal.db', this.file.applicationStorageDirectory + 'databases/delportal.db').then((entry) => {
-			let filePath = entry.toURL();
-
-		}, (error) => {
-			console.log("error al descargar ");
-			console.log(JSON.stringify(error));
-		});
 		/*return new Promise<any> ((reject, resolve) => {
 			this.http.get(wordpress_url + '/wp-content/uploads/delportal.db', { responseType: 'blob'}).subscribe((db: Blob) => {
 				return this.file.writeFile(this.file.applicationStorageDirectory + 'databases', 'delportal.db', db, {replace : true});
@@ -100,18 +88,19 @@ export class DelportalDb {
 					
 	}
 
-	getBestSales(page: number, sortOrder?: string) {
+	getBestSales(storeCode: string, page: number, sortOrder?: string) {
 		return new Promise<Object[]>((resolve, reject) => {
 			let offset = wordpress_per_page * (page-1);
 			let sortSql = this.getSortOrder(sortOrder);
 			this.openDb().then( () => {
-				this.db.executeSql("SELECT * FROM products ORDER BY total_sales DESC, " + sortSql + " LIMIT " + wordpress_per_page + " OFFSET " + offset, [])
+				this.db.executeSql("SELECT p.* FROM products p JOIN productsStore ps ON ps.idProduct = p.id WHERE ps.idStore = '''" + storeCode + "''' ORDER BY total_sales DESC, " + sortSql + " LIMIT " + wordpress_per_page + " OFFSET " + offset, [])
 				.then((res) => {
 					var all_rows = [];
 					for (let index = 0; index < res.rows.length; index++) {
 						all_rows.push(res.rows.item(index));
 					}
 					this.db.close();
+					
 					resolve(all_rows);
 				}).catch((errorSQL) => console.log("error getbestsales " + JSON.stringify(errorSQL)));
 			});
@@ -121,12 +110,12 @@ export class DelportalDb {
 		
 	}
 
-	getProducts(page: number, category: number, sortOrder?: string){
+	getProducts(page: number, category: number, storeCode: string, sortOrder?: string){
 		return new Promise<Object[]>((resolve, reject) => {
 			let offset = wordpress_per_page * (page-1);
 			let sortSql = this.getSortOrder(sortOrder);
 			this.openDb().then( () => {
-				this.db.executeSql("SELECT * FROM products where category=" + category + " ORDER BY " + sortSql + " LIMIT " + wordpress_per_page + " OFFSET " + offset, [])
+				this.db.executeSql("SELECT p.* FROM products p JOIN productsStore ps ON ps.idProduct = p.id where category=" + category + " AND ps.idStore = '''" + storeCode + "''' ORDER BY " + sortSql + " LIMIT " + wordpress_per_page + " OFFSET " + offset, [])
 				.then((res) => {
 					var all_rows = [];
 					for (let index = 0; index < res.rows.length; index++) {
@@ -222,6 +211,7 @@ export class DelportalDb {
 	getStores() {
 		return new Promise<Object[]>((resolve, reject) => {
 			
+			
 			this.openDb().then( () => {
 				this.db.executeSql("SELECT * FROM stores", [])
 				.then((res) => {
@@ -274,25 +264,4 @@ export class DelportalDb {
 		return sortSql;
 	}
 
-	getRelatedProducts(productId: number){
-
-		let relatedSentence = 'SELECT * FROM products WHERE category = (select category from products where id = ' + productId + ') ORDER BY random() limit 4';
-
-		return new Promise<Object[]>((resolve, reject) => {
-
-			this.openDb().then( () => {
-				this.db.executeSql(relatedSentence, [])
-				.then((res) => {
-					var all_rows = [];
-					for (let index = 0; index < res.rows.length; index++) {
-						all_rows.push(res.rows.item(index));
-					}
-					this.db.close();
-					if (all_rows.length > 0)
-						resolve(all_rows);
-					else resolve([]);
-				}).catch((errorSQL) => console.log("error getRelated " + JSON.stringify(errorSQL) ));
-			});
-		});
-	}
 }

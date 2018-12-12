@@ -1,140 +1,181 @@
-<ion-header no-border>
-  <ion-navbar>
-	<ion-title>{{'address.title'|translate}}</ion-title>
-	<ion-buttons end>
-		<button ion-button (click)="location()">
-			<ion-icon name="ios-locate-outline"></ion-icon>
+<ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
 		</button>
-	</ion-buttons>
-  </ion-navbar>
+		<ion-buttons end>
+			<button-search #search></button-search>
+		</ion-buttons>
+	</ion-toolbar>
+	<ion-navbar>
+		<ion-title>Regresar al carrito</ion-title>
+	</ion-navbar>
 </ion-header>
 
-<ion-content padding>
-<!-- Billing -->
-<div text-uppercase dark>{{'address.your_billing'|translate}}</div>
-<ion-list>
-	<form [formGroup]="formAddress">
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'general.first_name'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_first_name" (input)="checkUseBilling()"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'general.last_name'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_last_name" (input)="checkUseBilling()"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.company'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_company"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.address_1'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_address_1" (input)="checkUseBilling()"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.address_2'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_address_2"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.city'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_city" (input)="checkUseBilling()"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.zip'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_postcode" (input)="checkUseBilling()"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.country'|translate}}</ion-label>
-			<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate" type="text" formControlName="billing_country" (ionChange)="changeCountryBilling($event)">
-				<ion-option *ngFor="let country of countries" [value]="country.value">
-					<span [innerHtml]="country.name"></span>
-				</ion-option>
-			</ion-select>
-		</ion-item>
-		<ion-item bg-transparent no-padding *ngIf="statesBilling && statesBilling!='input'">
-			<ion-label floating>{{'address.states'|translate}}</ion-label>
-			<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate" type="text" formControlName="billing_state" (ionChange)="checkUseBilling()">
-				<ion-option *ngFor="let state of statesBilling" [value]="state.value">
-					<span [innerHtml]="state.name"></span>
-				</ion-option>
-			</ion-select>
-		</ion-item>
-		<ion-item bg-transparent no-padding *ngIf="statesBilling=='input'">
-			<ion-label floating>{{'address.states'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="billing_state" (input)="changeBillingState($event)"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.phone'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="tel" formControlName="billing_phone"></ion-input>
-		</ion-item>
-		<ion-item bg-transparent no-padding>
-			<ion-label floating>{{'address.email'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="user_email"></ion-input>
-		</ion-item>
-	</form>
-</ion-list>
-<!-- Delivery -->
-<div text-uppercase dark>{{'address.your_delivery'|translate}}</div>
-<ion-item mode="md" class="checkbox-use-billing" no-padding mode="md">
-	<ion-label text-wrap>{{'address.use_billing'|translate}}</ion-label>
-	<ion-checkbox mode="md" [(ngModel)]="useBilling" (ionChange)="updateShipping()"></ion-checkbox>
-</ion-item>
-<ion-list *ngIf="!useBilling">
-	<form [formGroup]="formAddress">
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'general.first_name'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_first_name"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'general.last_name'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_last_name"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'address.company'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_company"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'address.address_1'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_address_1"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'address.address_2'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_address_2"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'address.city'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_city"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'address.zip'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_postcode"></ion-input>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding>
-			<ion-label floating>{{'address.country'|translate}}</ion-label>
-			<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate" type="text" formControlName="shipping_country" (ionChange)="changeCountryShipping($event)">
-				<ion-option *ngFor="let country of countries" [value]="country.value">
-					<span [innerHtml]="country.name"></span>
-				</ion-option>
-			</ion-select>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding *ngIf="statesShipping && statesShipping!='input'">
-			<ion-label floating>{{'address.states'|translate}}</ion-label>
-			<ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate" type="text" formControlName="shipping_state">
-				<ion-option *ngFor="let state of statesShipping" [value]="state.value">
-					<span [innerHtml]="state.name"></span>
-				</ion-option>
-			</ion-select>
-		</ion-item>
-		<ion-item mode="md" bg-transparent no-padding *ngIf="statesShipping=='input'">
-			<ion-label floating>{{'address.states'|translate}}</ion-label>
-			<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_state"></ion-input>
-		</ion-item>
-	</form>
-</ion-list>
-<button ion-button block text-uppercase (click)="confirm()" 
-	[disabled]="formAddress.invalid || (formAddress.controls.billing_state.value == '' && billingStateRequired)
-	|| (formAddress.controls.shipping_state.value == '' && shippingStateRequired)">
-	<span text-uppercase>{{'address.confirm'|translate}}</span>
-</button>
-</ion-content>
 
-<ion-footer><ion-toolbar><footer-tabs></footer-tabs></ion-toolbar></ion-footer>
+<ion-content padding>
+	<!-- Billing -->
+	<div delportal>{{'address.your_billing'|translate}}</div>
+	<ion-list>
+		<form [formGroup]="formAddress">
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>Tipo de Documento *</ion-label>
+				<ion-select interface="popover" dir="{{display_mode}}" formControlName="document_type">
+					<ion-option value="1">Cédula</ion-option>
+					<ion-option value="2">RUC</ion-option>
+					<ion-option value="3">Pasaporte</ion-option>
+				</ion-select>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>Número de Documento *</ion-label>
+				<ion-input dir="{{display_mode}}" type="number" formControlName="document_number" clearInput (ionBlur)="checkCustomer()"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'general.first_name'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="billing_first_name" (input)="checkUseBilling()"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'general.last_name'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="billing_last_name" (input)="checkUseBilling()"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'address.company'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="billing_company"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'address.address_1'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="billing_address_1" (input)="checkUseBilling()"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'address.address_2'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="billing_address_2"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'address.city'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="billing_city" (input)="checkUseBilling()"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'address.phone'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="tel" formControlName="billing_phone"></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-label floating>{{'address.email'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="user_email"></ion-input>
+			</ion-item>
+		</form>
+	</ion-list>
+	<!-- Delivery -->
+	<div delportal>{{'address.your_delivery'|translate}}</div>
+	<ion-item mode="md" class="checkbox-use-billing" no-padding mode="md">
+		<ion-label text-wrap>{{'address.use_billing'|translate}}</ion-label>
+		<ion-checkbox mode="md" [(ngModel)]="useBilling" (ionChange)="updateShipping()"></ion-checkbox>
+	</ion-item>
+	<ion-list *ngIf="!useBilling">
+		<form [formGroup]="formAddress">
+			<ion-item mode="md" bg-transparent no-padding>
+				<ion-label floating>{{'address.address_1'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_address_1"></ion-input>
+			</ion-item>
+			<ion-item mode="md" bg-transparent no-padding>
+				<ion-label floating>{{'address.address_2'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_address_2"></ion-input>
+			</ion-item>
+			<ion-item mode="md" bg-transparent no-padding>
+                <ion-label floating>Referencias</ion-label>
+                <ion-textarea rows="3" margin-auto dark formControlName="shipping_reference"></ion-textarea>
+            </ion-item>
+			<ion-item mode="md" bg-transparent no-padding>
+				<ion-label floating>{{'address.city'|translate}}</ion-label>
+				<ion-input dir="{{display_mode}}" type="text" formControlName="shipping_city"></ion-input>
+			</ion-item>
+			<ion-item mode="md" bg-transparent no-padding>
+				<ion-label floating>Teléfono para Entrega</ion-label>
+				<ion-input dir="{{display_mode}}" type="tel" formControlName="shipping_phone"></ion-input>
+            </ion-item>
+		</form>
+	</ion-list>
+	<div delportal>Tu Forma de Pago</div>
+	<ion-list>
+		<form [formGroup]="formAddress">
+			<ion-row radio-group formControlName="card_type">
+				<ion-col>
+					<ion-item>
+						<ion-label><img src="assets/images/visa.jpg" /></ion-label>
+						<ion-radio value="VISA"></ion-radio>
+					</ion-item>
+				</ion-col>
+				<ion-col>
+					<ion-item>
+						<ion-label><img src="assets/images/mastercard.jpg" /></ion-label>
+						<ion-radio value="MC"></ion-radio>
+					</ion-item>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-10>
+					<ion-item bg-transparent no-padding>
+						<ion-label stacked>Número de Tarjeta</ion-label>
+						<ion-input type="tel" ccNum formControlName="card_number" autocomplete="cc-number" clearInput></ion-input>
+					</ion-item>
+				</ion-col>
+				<ion-col col-2 align-self-center>
+					<button ion-button float-right (click)="scanCard()" delportal>
+						<ion-icon name="camera"></ion-icon>
+					</button>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col>
+					<ion-item bg-transparent no-padding>
+						<ion-label stacked>Fecha de Expiración</ion-label>
+						<ion-input type="tel" type="tel" formControlName="card_expDate" autocomplete="cc-exp" id="cc-exp" ccExp
+						 clearInput placeholder="MM / YYYY"></ion-input>
+					</ion-item>
+				</ion-col>
+			</ion-row>
+			<ion-row>
+				<ion-col col-6 align-self-center>
+					<ion-label>Código de Seguridad</ion-label>
+				</ion-col>
+				<ion-col col-6 align-self-center>
+					<ion-item bg-transparent no-padding>
+						<ion-input type="tel" autocomplete="cc-cvc" id="cc-cvc" ccCvc formControlName="card_cvv" clearInput></ion-input>
+					</ion-item>
+				</ion-col>
+			</ion-row>
+		</form>
+	</ion-list>
+	<div delportal>Tu Usuario Delportal</div>
+	<p>Se creará un usuario con tu email.  Ingresa tu contraseña.</p>
+	<ion-list>
+		<form [formGroup]="formAddress">
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" placeholder="{{'general.password'|translate}}" type="password" formControlName="password"
+				 (input)="removeConfirm()" clearInput></ion-input>
+			</ion-item>
+			<ion-item bg-transparent no-padding>
+				<ion-input dir="{{display_mode}}" placeholder="{{'signup.confirm_password'|translate}}" type="password"
+				 formControlName="repass" clearInput></ion-input>
+			</ion-item>
+		</form>
+	</ion-list>
+	<ion-list>
+		<form [formGroup]="formAddress">
+			<ion-item bg-transparent no-padding>
+				<ion-label stacked>Comentarios Adicionales</ion-label>
+				<ion-textarea formControlName="additionalComments" rows="6" bordered-textarea placeholder="Por Ejemplo, instrucciones para empaque"></ion-textarea>
+			</ion-item>
+			<ion-item text-wrap bg-transparent no-padding>
+				<ion-label font-90>Acepto los términos y condiciones de la aplicación
+					<em>Delportal</em>
+				</ion-label>
+				<ion-toggle formControlName="terms">
+				</ion-toggle>
+			</ion-item>
+		</form>
+	</ion-list>
+
+	<button ion-button block (click)="confirm()" [disabled]="formAddress.invalid">
+		<span>{{'address.confirm'|translate}}</span>
+	</button>
+</ion-content>

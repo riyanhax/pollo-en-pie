@@ -40,18 +40,11 @@ export class ShoppingListSchedulePage {
 			id: [this.id],
 			recurrence: ['', Validators.required],
 			recurrence_number: ['', Validators.required],
-			weekdays: ['', Validators.required],
+			weekdays: [''],
 			startDate: ['', Validators.required],
 			endDate: ['']
 		});
-		this.storage.get('login').then(val => {
-			this.login = val;
-			console.log(this.id);
-            this.dp.getShoppingList(this.login, this.id).then(sl => {
-				this.shoppingList = sl;
-				this.reset();
-            });
-        });
+		
 
 	}
 
@@ -59,7 +52,7 @@ export class ShoppingListSchedulePage {
 		if (this.shoppingList == null) return;
 
         this.scheduleForm.patchValue({
-            id: [this.id],
+            id: this.id,
 			recurrence: this.shoppingList['recurrence'],
 			recurrence_number: this.shoppingList['recurrence_number'],
 			weekdays: this.shoppingList['weekdays'],
@@ -69,12 +62,22 @@ export class ShoppingListSchedulePage {
         });
 	}
 
-	ionViewDidLoad() {
-
+	ionViewDidEnter() {
+		this.storage.get('login').then(val => {
+			this.login = val;
+            this.dp.getShoppingList(this.login, this.id).then(sl => {
+				this.shoppingList = sl;
+				
+				this.reset();
+            });
+        });
 	}
 
 	save(){
 		
+		this.dp.updateUserShoppingListSchedule(this.login, this.scheduleForm.value).then(data => {
+			this.navCtrl.pop();
+		});
 	}
 
 }

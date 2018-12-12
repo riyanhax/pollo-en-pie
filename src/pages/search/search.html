@@ -135,7 +135,8 @@
 				</div>
 				<div [navPush]="DetailPage" [navParams]="{id:product.id}" relative class="product-image clearfix">
 					<!-- <img float-left *ngIf="product.modernshop_images && product.modernshop_images[0].modern_square" [src]="product.modernshop_images[0].modern_square" /> -->
-					<img-loader useImg float-left *ngIf="product.square_image != ''" src="{{product.square_image}}"></img-loader>
+					<!--<img-loader useImg float-left *ngIf="product.square_image != ''" src="{{product.square_image}}"></img-loader>-->
+					<img float-left *ngIf="product.square_image != ''" src="{{product.square_image}}" />
 					<img float-left *ngIf="product.square_image == ''" src="assets/images/logo-preload.png" />
 					<div absolute bottom primary-bg product-sale *ngIf="product.sale_price" class="sale">
 						<span light>{{(product.sale_price/product.regular_price*100)-100|number:'1.0-0'}}%</span>

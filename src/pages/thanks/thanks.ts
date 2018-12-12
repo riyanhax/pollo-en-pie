@@ -32,17 +32,21 @@ export class ThanksPage {
 	constructor(private navCtrl: NavController, 
 		navParams: NavParams, 
 		private http: Http,
-		storage: Storage, 
+		private storage: Storage, 
 		private core: Core) {
 		this.id = navParams.get('id');
 		
-		storage.get('login').then(val => {
+		
+		
+	}
+
+	ionViewDidEnter(){
+		this.storage.get('login').then(val => {
 			if (val && val['token']) {
 				this.login = val;
 				this.getData();
-			} else navCtrl.pop();
+			} else this.navCtrl.pop();
 		});
-		
 	}
 
 	getData() {
@@ -64,7 +68,7 @@ export class ThanksPage {
 				payment_method: data['credit_card'],
 				order_number: data['id'],
 				amount: data['total'],
-				transactionId: data['transaction_id']
+				transaction_id: data['transaction_id']
 			}
 
 			this.core.hideLoading();

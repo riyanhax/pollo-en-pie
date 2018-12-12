@@ -102,7 +102,7 @@ export class DetailPage {
 
 	setValues(){
 
-		this.dpdb.getRelatedProducts(this.id).then((related) => {
+		this.dpdb.getProductsById(this.detail.cross_sell_ids).then((related) => {
 			if (related != null){
 				this.relatedProducts = related;
 			}

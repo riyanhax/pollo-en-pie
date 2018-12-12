@@ -1,0 +1,31 @@
+<ion-header>
+    <ion-navbar color="graydreal">
+        <ion-buttons left>
+            <button ion-button delportal (click)="close()">Cancelar</button>
+        </ion-buttons>
+        <ion-buttons right>
+            <button [disabled]="saveDisabled" delportal ion-button (click)="save()">Elegir</button>
+        </ion-buttons>
+    </ion-navbar>
+
+    <ion-toolbar>
+        <ion-searchbar [(ngModel)]="query" (ionInput)="searchPlace()" placeholder="Escribe la dirección"></ion-searchbar>
+    </ion-toolbar>
+
+    <ion-list>
+        <ion-item *ngFor="let place of places" (touchstart)="selectPlace(place)">{{place.description}}</ion-item>
+    </ion-list>
+</ion-header>
+
+
+<ion-content>
+    <div #mapLocation id="mapLocation">
+        <ion-spinner icon="crescent"></ion-spinner>
+    </div>
+    <div absolute class="infoBox">
+        <button ion-button (click)="save()" [disabled]="noCoverage">
+            <span *ngIf="!noCoverage">Confirmar Dirección</span>
+            <span *ngIf="noCoverage">Fuera de Cobertura</span>
+        </button>
+    </div>
+</ion-content>

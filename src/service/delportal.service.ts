@@ -30,6 +30,7 @@ export class Delportal {
                     .subscribe((res) => {
                         let result = res.json();
                         let shoppingLists = this.setShoppingLists(result.shopping_lists);
+                        
                         let billingAdresses = this.setBillingAddresses(result.billing_addresses);
                         let deliveryAdresses = this.setDeliveryAddresses(result.delivery_addresses);
                         let userCards = this.setCreditCards(result.payment_data);
@@ -91,7 +92,74 @@ export class Delportal {
         });
 
     }
-    
+
+    cancelUserShoppingList(login: Object, id: Number){
+        return new Promise<Object[]>((resolve, reject) => {
+            this.core.showLoading();
+            let params = {};
+            params['id'] = id;
+            let option = {};
+            if (login && login['token']) {
+                let headers = new Headers();
+                headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                headers.set('Authorization', 'Bearer ' + login["token"]);
+                option['withCredentials'] = true;
+                option['headers'] = headers;
+            }
+            this.http.post(wordpress_url + '/wp-json/delportal/v1/cancel_shopping_list_schedule', this.core.objectToURLParams(params), option)
+            .subscribe(res => {
+                let shoppingLists: Object[] = this.setShoppingLists(res.json());
+
+                this.storage.set('userShoppingLists', shoppingLists);
+                this.core.hideLoading();
+
+
+
+
+                this.toast.showShortBottom("Lista Actualizada").subscribe(
+                    toast => { },
+                    error => { console.log(error); }
+                );
+                resolve(shoppingLists);
+            });
+        });
+    }
+
+    updateUserShoppingListSchedule(login: Object, shoppingList: Object){
+        return new Promise<Object[]>((resolve, reject) => {
+            this.core.showLoading();
+            let params = {};
+            params['id'] = shoppingList['id'];
+            params['recurrence'] = shoppingList['recurrence'];
+			params['recurrence_number'] = shoppingList['recurrence_number'];
+			params['weekdays'] = shoppingList['weekdays'],
+			params['startDate'] = shoppingList['startDate']
+			params['endDate'] = shoppingList['endDate']
+
+            let option = {};
+            if (login && login['token']) {
+                let headers = new Headers();
+                headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                headers.set('Authorization', 'Bearer ' + login["token"]);
+                option['withCredentials'] = true;
+                option['headers'] = headers;
+            }
+            this.http.post(wordpress_url + '/wp-json/delportal/v1/update_shopping_list_schedule', this.core.objectToURLParams(params), option)
+                .subscribe(res => {
+                    let shoppingLists: Object[] = this.setShoppingLists(res.json());
+
+                    this.storage.set('userShoppingLists', shoppingLists);
+                    this.core.hideLoading();
+
+                    this.toast.showShortBottom("Lista Actualizada").subscribe(
+                        toast => { },
+                        error => { console.log(error); }
+                    );
+                    resolve(shoppingLists);
+                });
+        });
+    }
+
     updateUserShoppingList(login: Object, shoppingList: Object) {
         return new Promise<Object[]>((resolve, reject) => {
             this.core.showLoading();
@@ -100,6 +168,7 @@ export class Delportal {
             params['title'] = shoppingList['title'];
             params['type'] = shoppingList['type'];
             params['products'] = JSON.stringify(shoppingList['products']);
+
             let option = {};
             if (login && login['token']) {
                 let headers = new Headers();
@@ -115,7 +184,38 @@ export class Delportal {
                     this.storage.set('userShoppingLists', shoppingLists);
                     this.core.hideLoading();
 
-                    this.toast.showShortBottom("Lista Agregada").subscribe(
+                    this.toast.showShortBottom("Lista Actualizada").subscribe(
+                        toast => { },
+                        error => { console.log(error); }
+                    );
+                    resolve(shoppingLists);
+                });
+        });
+    }
+
+    renameShoppingList(login: Object, id:Number, newName: string){
+        return new Promise<Object[]>((resolve, reject) => {
+            this.core.showLoading();
+            let params = {};
+
+            params['id'] = id;
+            params['title'] = newName;
+            let option = {};
+            if (login && login['token']) {
+                let headers = new Headers();
+                headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                headers.set('Authorization', 'Bearer ' + login["token"]);
+                option['withCredentials'] = true;
+                option['headers'] = headers;
+            }
+            this.http.post(wordpress_url + '/wp-json/delportal/v1/rename_shopping_list', this.core.objectToURLParams(params), option)
+                .subscribe(res => {
+                    let shoppingLists: Object[] = this.setShoppingLists(res.json());
+
+                    this.storage.set('userShoppingLists', shoppingLists);
+                    this.core.hideLoading();
+
+                    this.toast.showShortBottom("Lista Actualizada").subscribe(
                         toast => { },
                         error => { console.log(error); }
                     );
@@ -158,6 +258,7 @@ export class Delportal {
         let shoppingLists: Object[] = [];
         if (lists.length > 0) {
             lists.forEach(list => {
+                
                 if (list && list['_dp_user_shopping_list_id'] != null) {
 
                     let newList = {
@@ -167,8 +268,8 @@ export class Delportal {
                         'recurrence': list['_dp_user_shopping_list_recurrence'],
                         'recurrence_number': list['_dp_user_shopping_list_recurrence_number'],
                         'weekdays': list['_dp_user_shopping_list_weekdays'],
-                        'startDate': list['_dp_user_shopping_list_startDate'],
-                        'endDate': list['_dp_user_shopping_list_endDate'],
+                        'startDate': list['_dp_user_shopping_list_recurrence_begin'],
+                        'endDate': list['_dp_user_shopping_list_recurrence_end'],
                         'products': []
                     };
                     if (list['_dp_user_shopping_list_products']) {
@@ -190,7 +291,6 @@ export class Delportal {
         return new Promise((resolve, reject) => {
             this.getUserShoppingLists(login).then((list) => {
                 let userList = list.find((ul) => ul['id'] == id);
-                console.log(userList);
                 resolve(userList);
             });
         });
@@ -231,7 +331,6 @@ export class Delportal {
     getUserBillingAddresses(login: Object) {
         return new Promise<Object[]>((resolve, reject) => {
             this.storage.get('userBillingAddresses').then((val) => {
-                console.log(val);
                 resolve(val);
             });
         });
@@ -255,7 +354,7 @@ export class Delportal {
                         'country': address['_dp_user_billing_address_country'],
                         'email': address['_dp_user_billing_address_email'],
                         'phone': address['_dp_user_billing_address_phone'],
-                        'is_default': address['_dp_user_billing_address_default'] === true
+                        'is_default': address['_dp_user_billing_address_default']
                     };
                     billingAddresses = billingAddresses.concat(newAddress);
                 }
@@ -365,13 +464,13 @@ export class Delportal {
                     let newList = {
                         'id': list['_dp_user_shipping_address_id'],
                         'title': list['_dp_user_shipping_address_title'],
-                        'shipping_line_1': list['_dp_user_shipping_address_line_1'],
-                        'shipping_line_2': list['_dp_user_shipping_address_line_2'],
-                        'shipping_contact': list['_dp_user_shipping_address_contact'],
+                        'shipping_address_line_1': list['_dp_user_shipping_address_line_1'],
+                        'shipping_address_line_2': list['_dp_user_shipping_address_line_2'],
                         'shipping_phone': list['_dp_user_shipping_address_phone'],
                         'shipping_latitude': list['_dp_user_shipping_address_latitude'],
                         'shipping_longitude': list['_dp_user_shipping_address_longitude'],
                         'shipping_store': list['_dp_user_shipping_address_store_id'],
+                        'shipping_reference': list['_dp_user_shipping_address_reference'],
                         'is_default': list['_dp_user_shipping_address_default']
                     };
                     deliveryAddresses = deliveryAddresses.concat(newList);
@@ -400,7 +499,13 @@ export class Delportal {
             } else {
                 url = wordpress_url + '/wp-json/delportal/v1/update_delivery_address'
             }
+            if (deliveryAddress['is_default'] == "true"){
+                deliveryAddress['is_default'] = "on"
+            } else {
+                deliveryAddress['is_default'] = "off"
+            }
             let params = this.core.objectToURLParams(deliveryAddress);
+            console.log(deliveryAddress);
             this.http.post(url, params, option)
                 .subscribe(res => {
                     let deliveryAdresses: Object[] = this.setDeliveryAddresses(res.json());
@@ -549,5 +654,31 @@ export class Delportal {
         });
     }
 
+    /*************************** Clientes ***************************/
+    getCustomerData(document_number: string){
+        return new Promise<Object[]>((resolve, reject) => {
+            this.core.showLoading("Estamos consultando tus datos");
+            let url: string = wordpress_url + '/wp-json/delportal/v1/check_customer/' + document_number; 
+
+            this.http.get(url)
+                .subscribe(res => {
+                    this.core.hideLoading();
+                    resolve(res.json());
+                });
+        });
+    }
+
+    /*************************** Tracking **************************/
+    getTracking(orderId){
+        return new Promise<Object[]>((resolve, reject) => {
+            let url: string = wordpress_url + '/wp-json/delportal/v1/check_order_traking/' + orderId; 
+
+            this.http.get(url)
+                .subscribe(res => {
+                    this.core.hideLoading();
+                    resolve(res.json());
+                });
+        });   
+    }
 
 }

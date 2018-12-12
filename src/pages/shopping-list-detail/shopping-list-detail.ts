@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
@@ -20,6 +20,8 @@ import { SearchPage } from '../search/search';
 import { Delportal } from '../../service/delportal.service';
 import { ShoppingListSchedulePage } from '../shopping-list-schedule/shopping-list-schedule';
 import { DelportalDb } from '../../service/delportal.db.service';
+import { DelportalSearchService } from '../../service/delportal.search.service';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 declare var wordpress_url: string;
 declare var wordpress_per_page: Number;
@@ -35,10 +37,11 @@ export class DetailShoppingListPage {
 	DetailPage = DetailPage;
 	StorePage = StorePage;
 	SearchPage = SearchPage;
+	keyword: string;
 	id: Number; page = 1; sort: string = '-date'; range: Object = { lower: 0, upper: 0 };
 	data: Object = {}; favorite: Object = {}; products: Object[] = []; attributes: Object[] = [];
 	filter: Object = { grid: false, open: null, value: {}, valueCustom: {} }; filtering: boolean;
-	categories: Object[] = []; loaded: boolean; over: boolean;
+	loaded: boolean; over: boolean;
 	noResuilt: boolean = false; quantity: Number = 1; trans: Object = {};
 	actionCart: Object = [];
 	cartArray: Object = {};
@@ -47,24 +50,30 @@ export class DetailShoppingListPage {
 	shoppingLists: Object[] = [];
 	currentShoppingList: Object = {};
 	tax: Number = 0;
+	suscriptionText: string;
+	searching: boolean = false;
+	searchItems: Object[] = [];
 
 	constructor(
-		navParams: NavParams,
+		private navParams: NavParams,
 		private core: Core,
 		private http: Http,
 		private storage: Storage,
 		translate: TranslateService,
+		private alertCtrl: AlertController,
 		private Toast: Toast,
 		private navCtrl: NavController,
 		private dp: Delportal,
-		private dpdb: DelportalDb
+		private dpdb: DelportalDb,
+		public dpSearch: DelportalSearchService,
+		private barcodeScanner: BarcodeScanner
 	) {
 
 		translate.get('detail').subscribe(trans => this.trans = trans);
 		this.id = navParams.get('id');
 
 	}
-	ionViewWillEnter() {
+	ionViewDidEnter() {
 		this.checkCart();
 		this.getShoppingLists();
 		this.buttonCart.update();
@@ -83,9 +92,15 @@ export class DetailShoppingListPage {
 	getShoppingLists() {
 		this.storage.get('login').then(val => {
 			this.login = val;
+			console.log(this.id);
+			this.id = this.navParams.get('id');
+			console.log(this.id);
+			
 			this.dp.getShoppingList(val, this.id).then(sl => {
 				this.currentShoppingList = sl;
+
 				this.isSuscription = this.currentShoppingList['type'] == 'sync';
+				this.data = this.currentShoppingList['products'];
 				let product_ids: Object[] = [];
 				if (this.currentShoppingList['products'] && this.currentShoppingList['products'].length > 0) {
 					for (let index = 0; index < this.currentShoppingList['products'].length; index++) {
@@ -93,23 +108,40 @@ export class DetailShoppingListPage {
 						product_ids = product_ids.concat(element['productId']);
 					}
 				}
+				
+				if (this.currentShoppingList['type'] == 'sync') {
+					this.suscriptionText = this.currentShoppingList['recurrence_number'];
+					if (this.currentShoppingList['recurrence'] == 'daily') {
+						this.suscriptionText += ' día(s)';
+					}
+					if (this.currentShoppingList['recurrence'] == 'weekly') {
+						this.suscriptionText += ' semana(s)';
+					}
+					if (this.currentShoppingList['recurrence'] == 'monthly') {
+						this.suscriptionText += ' mes(es)';
+					}
+
+					this.suscriptionText += ' a partir del ' + this.currentShoppingList['startDate'] + ' al ' + this.currentShoppingList['endDate'];
+
+
+				}
 
 				if (product_ids.length > 0) {
 					this.core.showLoading();
 					let pinL = this.currentShoppingList['products'];
 					this.products = [];
 					this.dpdb.getProductsById(product_ids.join()).then((products) => {
-							products.forEach(p => {
-								let singlep = pinL.find((pl) => pl['productId'] == p['id']);
-						
-								if (singlep) {
-									p['qty'] = singlep['qty'];
-								}
-								this.products = this.products.concat(p);
-							});
-						this.core.hideLoading();
-					})
+						products.forEach(p => {
+							let singlep = pinL.find((pl) => pl['productId'] == p['id']);
 
+							if (singlep) {
+								p['qty'] = singlep['qty'];
+							}
+							this.products = this.products.concat(p);
+						});
+						this.core.hideLoading();
+					});
+					this.noResuilt = false;
 				} else {
 					this.noResuilt = true;
 				}
@@ -337,21 +369,10 @@ export class DetailShoppingListPage {
 		this.navCtrl.setRoot(StorePage);
 	}
 
-	delete(id: string) {
-
-
-		let productsIndex = this.products.findIndex((p) => p['id'] == id);
-		if (productsIndex > - 1) {
-			this.products.splice(productsIndex, 1);
-		}
-		let newCurrentListProducts = this.currentShoppingList['products'];
-		for (let index = 0; index < this.currentShoppingList['products'].length; index++) {
-			const element = this.currentShoppingList['products'][index];
-			if (element['productId'] == id) {
-				newCurrentListProducts.splice(index, 1);
-			}
-		}
-		this.currentShoppingList['products'] = newCurrentListProducts;
+	delete(product: any) {
+		var index = this.products.indexOf(product);
+		this.products.splice(index,1);
+		this.update();
 
 	}
 
@@ -367,41 +388,78 @@ export class DetailShoppingListPage {
 
 		this.dp.updateUserShoppingList(this.login, this.currentShoppingList).then((ret) => {
 			this.navCtrl.popToRoot();
-		}
-
-		);
+		});
 	}
 
 	update() {
 
+		this.total();
 	}
 	total(): Number {
 		let total = 0;
+		let tax = 0;
 
-		if (this.products.length <= 0)
-			return 0;
-
-		for (let index = 0; index < this.currentShoppingList['products'].length; index++) {
-			const element = this.currentShoppingList['products'][index];
-			let product: Object = this.products.find(p => p['id'] == element['productId']);
-
+		for (var key in this.products) {
+			let product = this.products[key];
+			tax += Number(product['tax']) * product['qty'];
 			if (Number(product['sale_price']) > 0) {
-				total += Number(product['sale_price']) * element['qty'];
+				total += Number(product['sale_price']) * product['qty'];
 			} else {
-				total += Number(product['regular_price']) * element['qty'];
+				total += Number(product['regular_price']) * product['qty'];
 			}
 		}
-
+		this.tax = tax;
 		return total;
 	}
 
 	gotoSuscription() {
+
 		this.navCtrl.push(this.ShoppingListSchedule, { id: this.currentShoppingList['id'] });
 	}
 
-	deleteList() {
-		this.dp.deleteShoppingList(this.login, this.id).then((ret) => {
-			this.navCtrl.popToRoot();
+	cancelSuscription() {
+		this.dp.cancelUserShoppingList(this.login, this.id).then(() => {
+			this.navCtrl.pop();
 		});
 	}
+
+	searchTerms(){
+		this.searching = true;
+		this.dpSearch.getResults(this.keyword).then(val => {
+			this.searchItems = val;
+			this.searching = false;
+		});
+	}
+
+	addToList(productId){
+		this.dp.addProductToShoppingList(this.login, 
+			this.id, 
+			[{ id: productId, qty: 1 }]).then( (res) => {
+				this.searchItems = [];
+				this.keyword = '';
+				this.getShoppingLists();
+
+			});
+	}
+
+	openCamera() {
+		this.barcodeScanner.scan().then(barcodeData => {
+			var barCode = barcodeData.text;
+			this.core.showLoading();
+			this.dpdb.getProductByBarcode(barCode).then((products) => {
+				products.forEach((p) => {
+					if (p['id']){
+						this.addToList(p['id']);
+					}
+				});
+				this.core.hideLoading();
+			});
+		}).catch(err => {
+			this.Toast.showShortBottom("Ocurrió un error").subscribe(
+				toast => { },
+				error => { console.log(error); }
+			);
+		});
+	}
+
 }

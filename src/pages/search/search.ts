@@ -21,7 +21,7 @@ import { DetailShoppingListPage } from '../shopping-list-detail/shopping-list-de
 import { DelportalSearchService } from '../../service/delportal.search.service';
 import { DelportalDb } from '../../service/delportal.db.service';
 
-declare var wordpress_url: string;
+
 declare var wordpress_per_page: Number;
 
 @Component({
@@ -59,7 +59,6 @@ export class SearchPage {
 
 	constructor(
 		navParams: NavParams,
-		private http: Http,
 		private core: Core,
 		private storage: Storage,
 		private navCtrl: NavController,

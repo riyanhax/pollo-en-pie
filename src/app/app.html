@@ -4,7 +4,7 @@
 			<div relative overflow class="account-header" text-center (swipe)="onSwipeContent($event)">
 				<img float-left width-100 src="assets/images/account-bg.png" />
 				<div mark absolute top left width-100 height-100></div>
-				<button absolute top right ion-button color="light" clear menuClose class="button-close">
+				<button absolute top right ion-button color="light" clear menuClose class="button-close" style="border:none;">
 					<ion-icon name="close"></ion-icon>
 				</button>
 				<ion-row center padding absolute top left align-items-end width-100 height-100>
@@ -13,7 +13,7 @@
 							<div class="account-avatar" margin-auto light>
 								<ion-icon name="contact"></ion-icon>
 							</div>
-							<button menuClose ion-button color="light" clear (click)="login()" class="disable-hover">
+							<button menuClose ion-button color="light" clear  text-uppercase (click)="login()" class="disable-hover"  style="border:none;">
 								<b>{{'account.login'|translate}}</b>
 							</button>
 						</div>

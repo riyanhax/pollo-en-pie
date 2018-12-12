@@ -40,7 +40,7 @@ export class LoginPage {
 	isLoggedIn: boolean = false;
 	users: any;
 	loginObject: Object;
-	
+	workingAddress: Object;
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -61,17 +61,9 @@ export class LoginPage {
 			password: ['', Validators.required]
 		});
 		translate.get('login').subscribe(trans => { if (trans) this.trans = trans; });
-		/*
-				fb.getLoginStatus()
-					.then(res => {
-						console.log(res.status);
-						if (res.status === "connect") {
-							this.isLoggedIn = true;
-						} else {
-							this.isLoggedIn = false;
-						}
-					})
-					.catch(e => console.log(e));*/
+		this.storage.get('workingDeliveryAddress').then((addr) => {
+			this.workingAddress = addr;
+		});
 	}
 	login() {
 		this.core.showLoading();
@@ -87,6 +79,10 @@ export class LoginPage {
 							this.storage.set('login', this.loginObject).then(() => {
 								this.dp.getAllLists(this.loginObject).then(() => {
 									this.events.publish('loggedin', user.json());
+									if (this.workingAddress != null){
+										this.dp.saveDeliveryAddress(this.login, this.workingAddress);
+									}
+
 									if(this.navCtrl.getPrevious() && this.navCtrl.getPrevious().component == this.WelcomePage){
 										this.navCtrl.setRoot(DeliveryAddressPage);
 									}
@@ -111,7 +107,7 @@ export class LoginPage {
 			);
 	}
 	saveCurrentWorkingAddress(): Promise<void> {
-		return this.storage.get('workingDeliveryAddressId').then(val => {
+		return this.storage.get('workingDeliveryAddress').then(val => {
 			let option = {};
 			let headers = new Headers();
 			headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, Events } from 'ionic-angular';
-import { Http } from '@angular/http';
 
 import { Storage } from '@ionic/storage';
 import { Toast } from '@ionic-native/toast';
@@ -10,8 +9,6 @@ import { DetailShoppingListPage } from '../shopping-list-detail/shopping-list-de
 import { Core } from '../../service/core.service';
 import { StorageMulti } from '../../service/storage-multi.service';
 import { Delportal } from '../../service/delportal.service';
-
-declare var wordpress_url: string;
 
 
 @Component({
@@ -79,7 +76,6 @@ export class ShoppingListsPage {
 
 
     goto(page: any) {
-
         if (!page) this.navCtrl.popToRoot();
         else {
             let previous = this.navCtrl.getPrevious();
@@ -112,13 +108,29 @@ export class ShoppingListsPage {
                 {
                     text: "Grabar",
                     handler: (data) => {
-                        this.dp.addUserShoppingList(this.login, data.listName).then((val) => {
-                            this.shoppingLists = val;
-                            if (this.shoppingLists.length <= 0)
-                                this.noResult = true;
-                            else this.noResult = false;
-                        });;
-
+                        let existing = this.shoppingLists.findIndex((sl) => sl['title'] == data.listName);
+                        if (existing > -1){
+                            this.toast.showLongBottom("Ya hay otra lista con ese nombre").subscribe(
+                                toast => { },
+                                error => { console.log(error); }
+                            );
+                        } else {
+                            this.dp.addUserShoppingList(this.login, data.listName).then((val) => {
+                                let prevShoppingLists = this.shoppingLists;
+                                let newId = 0;
+                                this.shoppingLists = val;
+                                if (prevShoppingLists.length == 0){
+                                    newId = this.shoppingLists[0]['id'];
+                                } else {
+                                    let newItem = this.shoppingLists.find(item => item['title'] == data.listName);
+                                    newId = newItem['id'];
+                                    
+                                }
+                                
+                                this.noResult = false;
+                                this.navCtrl.push(DetailShoppingListPage, {id: newId});
+                            });
+                        }
                     }
                 }
             ]
@@ -134,5 +146,43 @@ export class ShoppingListsPage {
                 this.noResult = true;
             else this.noResult = false;
         });
+    }
+
+    rename(shoppingListId: number){
+        let alert = this.alertCtrl.create({
+            title: "Cambiar Nombre",
+            subTitle: "Cambiar nombre a lista",
+
+            inputs: [
+                {
+                    name: 'listName',
+                    placeholder: 'Ingrese el nuevo nombre de la lista'
+                }
+            ],
+            buttons: [
+                {
+                    text: "Cancelar",
+                    role: 'cancel'
+                },
+                {
+                    text: "Grabar",
+                    role: 'cancel',
+                    handler: (data) => {
+                        let existing = this.shoppingLists.findIndex((sl) => sl['title'] == data.listName);
+                        if (existing > -1){
+                            this.toast.showShortBottom("Ya hay otra con ese nombre").subscribe(
+                                toast => { },
+                                error => { console.log(error); }
+                            );
+                        }else {
+                            this.dp.renameShoppingList(this.login, shoppingListId, data.listName).then((val) => {
+                                this.shoppingLists = val;
+                            });
+                        }
+                    }
+                }
+            ]
+        });
+        alert.present();
     }
 }

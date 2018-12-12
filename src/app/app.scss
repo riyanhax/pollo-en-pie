@@ -492,8 +492,9 @@ ion-app.md{font-family:Lato, sans-serif !important; }
 	ion-toolbar:first-child {
 		background-image:url(../assets/images/header-bg.jpg);
 		background-repeat:no-repeat;
+		background-position:center;
 		background-size:cover;
-		min-height: 66px !important;
+		min-height: 76px !important;
 	}
 	ion-toolbar .toolbar-background{
 			background:transparent;
@@ -575,5 +576,6 @@ ion-icon[size="large"]{font-size:2em;}
 }
 
 ion-content .button{border: solid 1px #CCC !important;font-weight: 700;}
-
+ion-menu .button{border:none !important;}
+button:focus, .focus-outline [ion-button]:focus {border-color:none;outline:none;box-shadow: none;}
 @import "../../node_modules/ionic2-auto-complete/auto-complete.scss";

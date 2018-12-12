@@ -24,13 +24,13 @@
 	<ion-list class="adressesList" *ngIf="!noResult" padding>
 		<ion-item-sliding *ngFor="let address of billingAddresses">
 			<ion-item [navPush]="BillingAddressPage" [navParams]="{id: address.id}">
-				<h3 green2><span *ngIf='address.is_default'>
+				<h3 green2><span *ngIf="address.is_default == 'on'">
 						<ion-icon name="heart"></ion-icon>&nbsp;&nbsp;
 					</span>{{address.title}}</h3>
 				<p>{{address.document_number}} - {{address.first_name}} {{address.last_name}}</p>
 			</ion-item>
 			<ion-item-options side="right">
-				<button *ngIf='!address.is_default' ion-button (click)="setDefault(address.id)" color="delportal">
+				<button *ngIf="address.is_default == 'off'" ion-button (click)="setDefault(address.id)" color="delportal">
 					<ion-icon large name="heart"></ion-icon>
 				</button>
 				<button ion-button (click)="delete(address.id)" color="rojo">

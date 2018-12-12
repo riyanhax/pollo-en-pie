@@ -22,35 +22,40 @@
                 <ion-label floating>Título (ej. Casa de Mis Padres) *</ion-label>
                 <ion-input dir="{{display_mode}}" formControlName="title" clearInput></ion-input>
             </ion-item>
-            <ion-item bg-transparent no-padding>
-                <ion-label floating>{{'address.address_1'|translate}}</ion-label>
-                <ion-input dir="{{display_mode}}" type="text" clearInput formControlName="shipping_address_1"></ion-input>
-            </ion-item>
+            <ion-row>
+                <ion-col col-10>
+                    <ion-item bg-transparent no-padding>
+                        <ion-label floating>{{'address.address_1'|translate}}</ion-label>
+                        <ion-input dir="{{display_mode}}" type="text" clearInput formControlName="shipping_address_line_1"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2>
+                    <button ion-button (click)="location()">
+                        <ion-icon name="locate"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
             <ion-item mode="md" bg-transparent no-padding>
                 <ion-label floating>{{'address.address_2'|translate}}</ion-label>
-                <ion-input dir="{{display_mode}}" type="text" clearInput formControlName="shipping_address_2"></ion-input>
-            </ion-item>
-            <ion-item mode="md" bg-transparent no-padding>
-                <ion-label floating>Persona que recibe el pedido*</ion-label>
-                <ion-input dir="{{display_mode}}" type="text" placeholder="" clearInput formControlName="shipping_contact"></ion-input>
+                <ion-input dir="{{display_mode}}" type="text" clearInput formControlName="shipping_address_line_2"></ion-input>
             </ion-item>
             <ion-item mode="md" bg-transparent no-padding>
                 <ion-label floating>Teléfono*</ion-label>
                 <ion-input dir="{{display_mode}}" type="tel" placeholder="" clearInput formControlName="shipping_phone"></ion-input>
             </ion-item>
             <ion-item mode="md" bg-transparent no-padding>
-                <ion-label floating>Seleccione el local
-                    <em>Delportal</em> más cercano</ion-label>
-                <ion-select dir="{{display_mode}}" [selectOptions]="{cssClass:'select-address'}" [cancelText]="'general.cancel'|translate"
-                    [okText]="'general.ok'|translate" type="text" formControlName="shipping_store">
-                    <ion-option *ngFor="let store of storesList" [value]="store.id">
-                        <span [innerHtml]="store.name"></span>
-                    </ion-option>
-                </ion-select>
+                <ion-label floating>Referencias*</ion-label>
+                <ion-textarea rows="3" margin-auto dark formControlName="shipping_reference"></ion-textarea>
             </ion-item>
             <ion-item mode="md" bg-transparent no-padding>
                 <ion-label>Predeterminada?</ion-label>
-                <ion-checkbox formControlName="is_default"></ion-checkbox>
+                <ion-toggle formControlName="is_default"></ion-toggle>
+            </ion-item>
+            <ion-item hidden>
+                <ion-input type="text" formControlName="shipping_latitude"></ion-input>
+            </ion-item>
+            <ion-item hidden>
+                <ion-input type="text" formControlName="shipping_longitude"></ion-input>
             </ion-item>
         </form>
     </ion-list>

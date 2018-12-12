@@ -10,7 +10,7 @@ page-delivery-address {
     ion-segment{max-width:80%;margin:0 auto;}
     .segment-button{border:solid 1px rgba(0,0,0,0.1);text-transform:capitalize !important;font-size:1.4rem !important;}
     
-    .address-indicator{border:solid 1px #CAE0C7;background:url(../assets/images/marker.png) no-repeat 5% 50% ;padding:15px 5px 15px 15%;}
+    .address-indicator{border:solid 1px #CAE0C7;background:url(../assets/images/marker.png) no-repeat 0% 50%;background-size:15%;padding:15px 5px 15px 15%;}
     .address-indicator2{padding:2%;margin-top:1em;border:solid 1px #CAE0C7;}
     
 }

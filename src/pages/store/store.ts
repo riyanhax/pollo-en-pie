@@ -55,7 +55,8 @@ export class StorePage {
 	workingAddress: Object = {};
 	addresses: Object[] = [];
 	userDeliveryAddresses: Object[] = [];
-	prices: Object = { min: 0, max: 0, minCents: 0, maxCents: 0 };
+    prices: Object = { min: 0, max: 0, minCents: 0, maxCents: 0 };
+    storeCode: string;
 
 
 	emptyCat = {
@@ -130,10 +131,17 @@ export class StorePage {
 							});
 							confirm.present();
 						} else {
-							this.dp.getUserDeliveryAddress(this.login, wa['id']).then(addr => {
-								this.workingAddress = addr;
-								this.initialLoad();
-							});
+                            if (wa['id'] != null) {
+                                this.dp.getUserDeliveryAddress(this.login, wa['id']).then(addr => {
+                                    this.workingAddress = addr;
+                                    this.storeCode = addr['shipping_store'];
+                                    this.initialLoad();
+                                });
+                            } else {
+                                this.workingAddress = wa;
+                                this.storeCode = wa['shipping_store'];
+                                this.initialLoad();
+                            }
 						}
 					});
 				});
@@ -157,7 +165,10 @@ export class StorePage {
 						});
 						confirm.present();
 					} else {
-						this.workingAddress['title'] = value['title'];
+                        this.workingAddress['title'] = value['title'];
+                        this.workingAddress['shipping_store'] = value['shipping_store'];
+                        this.storeCode = value['shipping_store'];
+                        console.log("2 -- "  + this.storeCode);
 						this.initialLoad();
 					}
 				});
@@ -181,7 +192,6 @@ export class StorePage {
 
 					this.range['lower'] = this.prices['minCents'];
 					this.range['upper'] = this.prices['maxCents'];
-					console.log(this.prices);
 					this.loaded = true;
 				}
 				else {
@@ -287,13 +297,13 @@ export class StorePage {
 			let verb: String = '';
 			let sortParams: Object;
 			if (this.selectedCategoryId == 0) {
-				this.dpdb.getBestSales(this.page, this.sort).then((products) => {
+				this.dpdb.getBestSales(this.storeCode, this.page, this.sort).then((products) => {
 					observable.next(products);
 
 					observable.complete();
 				});
 			} else {
-				this.dpdb.getProducts(this.page, this.selectedSubCategoryId, this.sort).then((products) => {
+				this.dpdb.getProducts(this.page, this.selectedSubCategoryId, this.storeCode, this.sort).then((products) => {
 					observable.next(products);
 					observable.complete();
 				});
@@ -377,7 +387,6 @@ export class StorePage {
 
 				this.range['lower'] = this.prices['minCents'];
 				this.range['upper'] = this.prices['maxCents'];
-				console.log(this.prices);
 				this.loaded = true;
 			}
 			else {
@@ -391,7 +400,7 @@ export class StorePage {
 
 	addtoCart(detail: any) {
 		if (!detail['in_stock']) {
-			this.Toast.showShortBottom("Out of Stock").subscribe(
+			this.Toast.showShortBottom("Sin stock disponible").subscribe(
 				toast => { },
 				error => { console.log(error); }
 			);

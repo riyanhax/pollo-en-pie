@@ -47,7 +47,8 @@ export class CreditCardPage {
 		public dp: Delportal,
 		private formBuilder: FormBuilder) {
 
-		this.id = this.navParams.get('id');
+		this.id = this.navParams.get('id') == null ? 0 : this.navParams.get('id');
+
 
 		this.formCreditCard = formBuilder.group({
 			id: [0],
@@ -55,7 +56,7 @@ export class CreditCardPage {
 			type: ['', Validators.required],
 			number: ['', Validators.compose([CreditCardValidator.validateCardNumber, Validators.required]) ],
 			expDate: ['', Validators.required],
-			is_default: [false]
+			is_default: ['off']
 		});
 
 		this.storage.get('login').then(val => {
@@ -69,7 +70,7 @@ export class CreditCardPage {
 	}
 
 	ionViewDidLoad() {
-		console.log('ionViewDidLoad CreditCardPage');
+		
 	}
 
 	scanCard() {

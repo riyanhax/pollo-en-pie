@@ -53,7 +53,6 @@
 					</button>
 				</ion-col>
 			</ion-row>
-
 			<ion-item bg-transparent no-padding>
 				<ion-label stacked>Fecha de Expiración</ion-label>
 				<ion-input type="tel" type="tel" formControlName="expDate" autocomplete="cc-exp" id="cc-exp" ccExp clearInput
@@ -61,13 +60,10 @@
 			</ion-item>
 			<ion-item mode="md" bg-transparent no-padding>
 				<ion-label>Predeterminada?</ion-label>
-				<ion-checkbox formControlName="is_default"></ion-checkbox>
+				<ion-toggle formControlName="is_default"></ion-toggle>
 			</ion-item>
-
 		</form>
 	</ion-list>
-
-
 	<ion-row>
 		<ion-col text-center>
 			<button ion-button (click)="save()">
@@ -75,5 +71,4 @@
 			</button>
 		</ion-col>
 	</ion-row>
-
 </ion-content>

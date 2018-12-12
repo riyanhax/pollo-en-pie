@@ -41,7 +41,8 @@
 		<ion-list light-bg class="list-product">
 			<ion-row *ngFor="let product of (data|ObjectToArray)" no-padding relative class="item-product">
 				<ion-col col-3 align-self-center no-padding [navPush]="DetailPage" [navParams]="{id:product.id}">
-					<img-loader useImg [spinner]="false" float-left *ngIf="product.images" src="{{product.images}}"></img-loader>
+					<!--<img-loader useImg [spinner]="false" float-left *ngIf="product.images" src="{{product.images}}"></img-loader>-->
+					<img float-left *ngIf="product.images" src="{{product.images}}" />
 					<img float-left border *ngIf="!product.images" src="assets/images/logo-preload.png" />
 				</ion-col>
 				<ion-col col-9 padding-8-horizontal>
@@ -69,17 +70,15 @@
 					</ion-row>
 				</ion-col>
 				<button ion-button clear color="gray" absolute no-margin no-border class="button-delete disable-hover" (click)="delete(product.idCart)">
-					<ion-icon name="trash"></ion-icon>
+					<ion-icon name="trash" size="large"></ion-icon>
 				</button>
 			</ion-row>
 		</ion-list>
 
 		<div light-bg dark class="totals">
-			<div margin-bottom text-center>
-				<span font-weight-700 dark text-uppercase>{{'cart.totals'|translate}}</span>
-			</div>
 			<ion-row>
-				<ion-col col-8 text-uppercase text-right>{{'cart.total_price'|translate}}</ion-col>
+				<ion-col col-4 font-weight-700 dark text-uppercase text-right>{{'cart.totals'|translate}}</ion-col>
+				<ion-col col-4 text-uppercase text-right>{{'cart.total_price'|translate}}</ion-col>
 				<ion-col col-4 text-right>{{total()|price}}</ion-col>
 			</ion-row>
 			<ion-row>
@@ -106,11 +105,11 @@
 			</ion-row>
 		</div>
 		<div light-bg dark class="totals savings">
-			<div margin-bottom text-center>
-				<b dark text-uppercase>AHORROS</b>
-			</div>
 			<ion-row>
-				<ion-col col-8 font-700 text-right>Precio Comercio</ion-col>
+				<ion-col col-4 dark text-uppercase text-right>
+					AHORROS
+				</ion-col>
+				<ion-col col-4 font-700 text-right>Precio Comercio</ion-col>
 				<ion-col col-4 text-right>{{totalPvp()|price}}</ion-col>
 			</ion-row>
 			<ion-row>

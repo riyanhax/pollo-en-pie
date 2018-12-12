@@ -65,7 +65,9 @@ export class CartPage {
 		translate.get('cart').subscribe(trans => this.trans = trans);
 		this.getData();
 		if (config['required_login']) this.check_require_login = config['required_login'];
-		if (config['shipping_cost']) this.shipping_cost = config['shipping_cost'];
+		if (config['shipping_cost']) 
+			this.shipping_cost = config['shipping_cost'];
+		else this.shipping_cost = 0;
 	}
 	ionViewDidEnter() {
 		if (this.isCache) this.getData();
@@ -406,7 +408,7 @@ export class CartPage {
 		
 			if (this.login) this.navCtrl.push(this.OrderCheckoutPage);
 			else{
-				let alert = this.alertCtrl.create({
+				/*let alert = this.alertCtrl.create({
 					message: this.trans['confirm']['message'],
 					cssClass: 'alert-no-title alert-signout',
 					buttons: [
@@ -427,7 +429,8 @@ export class CartPage {
 						}
 					]
 				});
-				alert.present();
+				alert.present();*/
+				this.navCtrl.push(this.AddressPage)
 			} 
 		
 	}

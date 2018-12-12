@@ -58,8 +58,9 @@ export class UserAddressesPage {
 
 	setDefault(id:number){
 		let uc = this.userAddresses.find((c) => c['id'] == id);
-		uc['is_default'] = !uc['is_default'];
+		
 		if (uc){
+			uc['is_default'] = 'on';
 			this.dp.saveDeliveryAddress(this.login, uc).then(data => {
 				this.userAddresses = data;
 

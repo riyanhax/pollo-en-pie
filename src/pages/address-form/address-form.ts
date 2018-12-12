@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Platform } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { CoreValidator } from '../../validator/core';
@@ -10,6 +10,12 @@ import { Storage } from '@ionic/storage';
 import { StorePage } from '../store/store';
 import { DelportalDb } from '../../service/delportal.db.service';
 import { Delportal } from '../../service/delportal.service';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
+import { Device } from '@ionic-native/device';
+import { Geolocation } from '@ionic-native/geolocation';
+import { Geocoder, GeocoderResult, LatLng } from '@ionic-native/google-maps';
+import { LocationSelectPage } from '../location-select/location-select';
 
 /**
  * Generated class for the AddressFormPage page.
@@ -22,11 +28,12 @@ import { Delportal } from '../../service/delportal.service';
 @Component({
     selector: 'page-address-form',
     templateUrl: 'address-form.html',
+    providers: [Diagnostic, LocationAccuracy, Geolocation, Device]
 })
 export class AddressFormPage {
     formDeliveryAddress: FormGroup;
     storePage = StorePage;
-
+    LocationSelectPage = LocationSelectPage;
     login: Object;
     data: Object;
     id: number;
@@ -41,21 +48,27 @@ export class AddressFormPage {
         public dpdb: DelportalDb,
         public dp: Delportal,
         public navParams: NavParams,
-        public storage: Storage
+        public storage: Storage,
+        
+        private platform: Platform,
+        private Diagnostic: Diagnostic,
+        private LocationAccuracy: LocationAccuracy,
+        private Device: Device,
+        private Geolocation: Geolocation,
     ) {
         this.id = this.navParams.get('id');
 
         this.formDeliveryAddress = this.formBuilder.group({
             id: [0],
             title: ['', Validators.required],
-            shipping_address_1: ['', Validators.required],
-            shipping_address_2: [''],
-            shipping_contact: ['', Validators.required],
+            shipping_address_line_1: ['', Validators.required],
+            shipping_address_line_2: [''],
             shipping_phone: ['', Validators.required],
             shipping_store: [0, Validators.required],
             shipping_latitude: [''],
             shipping_longitude: [''],
-            is_default: [false]
+            shipping_reference: ['', Validators.required],
+            is_default: ['off']
         });
         this.dpdb.getStores().then(stores => {
             this.storesList = stores;
@@ -74,19 +87,34 @@ export class AddressFormPage {
 
     }
 
+    ionViewDidEnter(){
+        this.storage.get('tempAddress').then((address) => {
+            if (address != null){
+                this.formDeliveryAddress.patchValue({
+                    title: address['shipping_address_1'],
+                    shipping_address_line_1: address['shipping_address_1'],
+                    shipping_store: address['shipping_store'],
+                    shipping_latitude: address['shipping_latitude'],
+                    shipping_longitude: address['shipping_longitude']
+                });
+                this.storage.remove('tempAddress');
+            }
+        });
+
+    }
+
     reset() {
         if (this.data == null) return;
-
         this.formDeliveryAddress.patchValue({
             id: this.data['id'],
             title: this.data['title'],
-            shipping_address_1: this.data["shipping_line_1"],
-            shipping_address_2: this.data["shipping_line_2"],
-            shipping_contact: this.data["shipping_contact"],
+            shipping_address_line_1: this.data["shipping_address_line_1"],
+            shipping_address_line_2: this.data["shipping_address_line_2"],
             shipping_phone: this.data["shipping_phone"],
             shipping_store: this.data["shipping_store"],
             shipping_latitude: this.data["shipping_latitude"],
             shipping_longitude: this.data["shipping_longitude"],
+            shipping_reference: this.data["shipping_reference"],
             is_default: this.data['is_default']
 
         });
@@ -105,10 +133,24 @@ export class AddressFormPage {
             });
         } else {
             this.storage.set("workingDeliveryAddress", this.formDeliveryAddress.value).then(() => {
-                this.navCtrl.setRoot(StorePage);
+                this.navCtrl.push(StorePage);
             });
         }
             
     }
 
+    location() {
+        this.navCtrl.push(LocationSelectPage, { source: 'form'} )
+	}
+
+    goto(page: any) {
+
+		if (!page) this.navCtrl.popToRoot();
+		else {
+			let previous = this.navCtrl.getPrevious();
+			if (previous && previous.component == page) this.navCtrl.pop();
+			else this.navCtrl.push(page);
+		}
+
+	}
 }

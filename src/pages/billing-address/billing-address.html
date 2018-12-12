@@ -29,10 +29,9 @@
 					<ion-option value="3">Pasaporte</ion-option>
 				</ion-select>
 			</ion-item>
-
 			<ion-item bg-transparent no-padding>
 				<ion-label floating>Número de Documento *</ion-label>
-				<ion-input dir="{{display_mode}}" type="number" formControlName="document_number" clearInput></ion-input>
+				<ion-input dir="{{display_mode}}" type="number" formControlName="document_number" clearInput (ionBlur)="checkCustomer()"></ion-input>
 			</ion-item>
 			<ion-item bg-transparent no-padding>
 				<ion-label floating>Título (eg. Mis Datos) *</ion-label>
@@ -47,6 +46,11 @@
 				<ion-input dir="{{display_mode}}" formControlName="last_name" clearInput></ion-input>
 			</ion-item>
 			<ion-item mode="md" bg-transparent no-padding>
+				<ion-label floating>Email *</ion-label>
+				<ion-input type="email" formControlName="email">
+				</ion-input>
+			</ion-item>
+			<ion-item mode="md" bg-transparent no-padding>
 				<ion-label floating>Dirección *</ion-label>
 				<ion-input type="text" formControlName="address_line_1">
 				</ion-input>
@@ -56,11 +60,7 @@
 				<ion-input type="text" formControlName="address_city">
 				</ion-input>
 			</ion-item>
-			<ion-item mode="md" bg-transparent no-padding>
-				<ion-label floating>Email *</ion-label>
-				<ion-input type="email" formControlName="email">
-				</ion-input>
-			</ion-item>
+
 			<ion-item mode="md" bg-transparent no-padding>
 				<ion-label floating>Teléfono *</ion-label>
 				<ion-input type="tel" formControlName="phone">
@@ -68,13 +68,13 @@
 			</ion-item>
 			<ion-item mode="md" bg-transparent no-padding>
 				<ion-label>Predeterminada?</ion-label>
-				<ion-checkbox formControlName="is_default"></ion-checkbox>
+				<ion-toggle formControlName="is_default"></ion-toggle>
 			</ion-item>
 		</form>
 	</ion-list>
 	<ion-row>
 		<ion-col text-center>
-			<button ion-button (click)="save()">
+			<button ion-button (click)="save()" [disabled]="formBillingAddress.invalid">
 				Guardar Cambios
 			</button>
 		</ion-col>

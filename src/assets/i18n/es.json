@@ -376,7 +376,7 @@
 		"email": "Correo Electrónico *",
 		"confirm": "Confirmar",
 		"your_delivery": "Tu dirección de entrega",
-		"use_billing": "Usar la misma dirección de facturación"
+		"use_billing": "Entregar en la misma dirección de facturación"
 	},
 	"checkout": {
 		"title": "Check out",

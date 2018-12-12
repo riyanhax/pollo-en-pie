@@ -60,7 +60,7 @@ export class UserCardsPage {
 	setDefault(id){
 
 		let uc = this.userCards.find((c) => c['id'] == id);
-		uc['is_default'] = !uc['is_default'];
+		uc['is_default'] = 'on';
 		if (uc){
 			this.dp.saveUserCreditCard(this.login, uc).then(data => {
 				this.userCards = data;

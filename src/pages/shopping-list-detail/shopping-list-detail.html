@@ -9,46 +9,68 @@
         </ion-buttons>
     </ion-toolbar>
     <ion-navbar>
-        <ion-title>{{currentShoppingList.title}}</ion-title>
-        <ion-buttons end>
-            <ion-row align-items-center>
-                <ion-col class="verticalCentered" align-self-center>
-                    <ion-icon *ngIf="isSuscription" name="checkbox-outline" delportal></ion-icon>
-                    <ion-icon *ngIf="!isSuscription" name="square-outline" delportal></ion-icon>
-                    <span style="font-size:1.5rem;padding-left:5px;">Suscripción</span>
-                    <button ion-button clear (click)="gotoSuscription()">
-                        <ion-icon name="arrow-forward" size="large"></ion-icon>
-                    </button>
-                </ion-col>
-            </ion-row>
-
-        </ion-buttons>
+        <ion-title>Regresar</ion-title>
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-toolbar class="header-filter">
-        <!--<button ion-button clear color="dark" no-margin (click)="openFilter()" class="disable-hover button-drop">
-            <span [attr.primary]="filter.open=='filter' ? true : null">{{'categories.filter'|translate}}</span>
-            <ion-icon name="md-arrow-dropdown"></ion-icon>
-        </button>
-        <button ion-button clear color="dark" no-margin (click)="openSort()" class="disable-hover button-drop">
-            <span [attr.primary]="filter.open=='sort' ? true : null">{{'categories.sort'|translate}}</span>
-            <ion-icon name="md-arrow-dropdown"></ion-icon>
-        </button>-->
-
-        <div float-left *ngIf="0< products.length">
-            <button float-right ion-button clear color="dark" no-margin class="disable-hover" [ngClass]="{'disabled':filter.grid}"
-                (click)="filter.grid=false">
-                <ion-icon name="reorder" size="large"></ion-icon>
-            </button>
-            <button float-right ion-button clear color="dark" no-margin class="disable-hover" [ngClass]="{'disabled':!filter.grid}"
-                (click)="filter.grid=true">
-                <ion-icon name="grid" size="large"></ion-icon>
-            </button>
+    <h4 delportal text-center>Lista: {{currentShoppingList.title}}</h4>
+    <hide-show color="light" show="false" no-border>
+        <span this-title>
+            <b delportal>Datos de Suscripción</b>
+        </span>
+        <div this-content>
+            <div *ngIf="currentShoppingList.type == 'sync'">
+                <p>Esta lista será facturada y entregada cada {{suscriptionText}}</p>
+                <ion-row>
+                    <ion-col col-6>
+                        <button ion-button (click)="gotoSuscription()">
+                            Modificar Suscripción
+                        </button>
+                    </ion-col>
+                    <ion-col col-6>
+                        <button ion-button (click)="cancelSuscription()">
+                            Cancelar Suscripción
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </div>
+            <div *ngIf="currentShoppingList.type == 'list'">
+                <ion-row>
+                    <ion-col col-6>
+                        <p>No se ha configurado suscripción para esta lista.</p>
+                    </ion-col>
+                    <ion-col col-6>
+                        <button ion-button (click)="gotoSuscription()">
+                            Suscribir
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </div>
         </div>
-
-
+    </hide-show>
+    <h6 delportal text-center>Productos en esta lista</h6>
+    <ion-toolbar class="header-filter">
+        <ion-row>
+            <ion-col col-10>
+                <ion-searchbar #si autocomplete="on" autocorrect="on" placeholder="Buscar" [(ngModel)]="keyword"
+                    [showCancelButton]="true" cancelButtonText="Cancelar" (ionInput)="searchTerms($event)" (ionCancel)="onCancel($event)">
+                </ion-searchbar>
+            </ion-col>
+            <ion-col col-2>
+                <button ion-button clear (click)="openCamera()">
+                    <img src="assets/images/barcode.png" width="30px" />
+                </button>
+            </ion-col>
+        </ion-row>
     </ion-toolbar>
+    <div text-center>
+        <ion-spinner icon="crescent" *ngIf="searching"></ion-spinner>
+    </div>
+    <ion-list *ngIf="searchItems.length > 0">
+        <ion-item *ngFor="let item of searchItems" (click)="addToList(item.id)">
+            {{item.name}}
+        </ion-item>
+    </ion-list>
     <!-- Filter -->
     <div *ngIf="filter.open=='filter'" ion-fixed width-100 height-100 light-bg>
         <ion-scroll width-100 height-100 scrollY="true">
@@ -114,9 +136,10 @@
     </ion-row>
 
     <ion-list light-bg class="list-product" *ngIf="0< products.length" padding-horizontal>
-        <ion-row *ngFor="let product of products" no-padding relative class="item-product">
+        <ion-row *ngFor="let product of products;" no-padding relative class="item-product">
             <ion-col col-3 align-self-center no-padding [navPush]="DetailPage" [navParams]="{id:product.id}">
-                <img-loader useImg float-left *ngIf="product.square_image != ''" src="{{product.square_image}}"></img-loader>
+                <!--<img-loader useImg float-left *ngIf="product.square_image != ''" src="{{product.square_image}}"></img-loader>-->
+                <img float-left *ngIf="product.square_image != ''" src="{{product.square_image}}" />
                 <img float-left border *ngIf="product.square_image == ''" src="assets/images/logo-preload.png" />
             </ion-col>
             <ion-col col-9 padding-8-horizontal>
@@ -144,9 +167,9 @@
                     </ion-col>
                 </ion-row>
             </ion-col>
-            <button ion-button clear color="gray" absolute top right no-margin class="button-delete disable-hover"
-                (click)="delete(product.id)">
-                <ion-icon name="trash"></ion-icon>
+            <button ion-button clear color="gray" absolute top right no-margin no-border class="button-delete disable-hover"
+                (click)="delete(product)">
+                <ion-icon name="trash" size="large"></ion-icon>
             </button>
         </ion-row>
     </ion-list>
@@ -167,33 +190,27 @@
             <ion-col col-4 text-right green3>{{total()+tax|price}}</ion-col>
         </ion-row>
     </div>
-
-
     <ion-row>
-        <ion-col col-6>
-            <button ion-button block [navPush]="SearchPage" [navParams]="{shoppingListId:id}">Buscar Productos</button>
-        </ion-col>
-        <ion-col col-6>
+        <ion-col>
             <button ion-button block (click)="shop()">{{'cart.shop'|translate}}</button>
         </ion-col>
     </ion-row>
 </ion-content>
 <ion-footer>
     <ion-toolbar>
-        <ion-buttons text-center>
-            <ion-col>
-                <button *ngIf="products.length > 0" ion-button class="button-cart" color="delportal" (tap)="addtoCart()">
-                    <div float-left width-100 font-weight-500>
-                        <img src="assets/images/cart.png" width="18px" /> &nbsp; Agregar
-                    </div>
-                </button>
-                <button ion-button bg-primary (click)="deleteList()" class="disable-hover">
-                    Eliminar Lista
-                </button>
-                <button ion-button bg-primary (click)="saveList()" class="disable-hover">
-                    Grabar Lista
-                </button>
-            </ion-col>
+        <ion-buttons>
+            <ion-row align-items-center text-center>
+                <ion-col col-6>
+                    <button *ngIf="products.length > 0" ion-button class="button-cart" (tap)="addToCart()">
+                        <img src="assets/images/cart.png" width="18px" /> &nbsp; Comprar
+                    </button>
+                </ion-col>
+                <ion-col col-6>
+                    <button *ngIf="products.length > 0" ion-button class="button-cart" (tap)="saveList()">
+                        Grabar Lista
+                    </button>
+                </ion-col>
+            </ion-row>
         </ion-buttons>
     </ion-toolbar>
 </ion-footer>

@@ -1,4 +1,13 @@
 <ion-header no-border (swipe)="onSwipeContent($event)" class="dp-head">
+	<ion-toolbar>
+		<button ion-button menuToggle color="gray9">
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-buttons end>
+			<button-search #search></button-search>
+			<button-cart #cart icon="cart"></button-cart>
+		</ion-buttons>
+	</ion-toolbar>
 	<ion-navbar>
 		<ion-title>Regresar</ion-title>
 	</ion-navbar>
@@ -9,12 +18,10 @@
 		<ion-slides (ionSlideDidChange)="changeSlides($event)" pager="false" dir="{{display}}">
 			<ion-slide>
 				<div text-center>
-					<img-loader useImg [spinner]="false" *ngIf="detail.medium_image" src="{{detail.medium_image}}" (click)="viewImage(detail.large_image)"></img-loader>
+					<!--<img-loader useImg [spinner]="false" *ngIf="detail.medium_image" src="{{detail.medium_image}}" (click)="viewImage(detail.large_image)"></img-loader>-->
+					<img *ngIf="detail.medium_image" src="{{detail.medium_image}}" (click)="viewImage(detail.large_image)" />
 					<img *ngIf="detail.small_image == ''" src="assets/images/logo-preload.png" />
 				</div>
-				<!--<img text-center *ngIf="image.wooconnector_small" [src]="image.wooconnector_small" (click)="viewImage(image.wooconnector_large)"
-				/>
-				<img text-center *ngIf="!image.wooconnector_small" src="assets/images/no-image.png" />-->
 			</ion-slide>
 		</ion-slides>
 
@@ -100,14 +107,13 @@
 		</div>
 		<div padding>
 			<ion-row border-top>
-				<ion-col col-6>
-					<button *ngIf="loggedIn" ion-button (click)="addToList()" class="disable-hover"
-					 text-capitalize>
+				<ion-col col-6 >
+					<button *ngIf="loggedIn" ion-button block (click)="addToList()" class="disable-hover" text-capitalize>
 						A&ntilde;adir a una lista
 					</button>
 				</ion-col>
 				<ion-col col-6>
-					<button ion-button (click)="share()" class="disable-hover">
+					<button ion-button (click)="share()" block class="disable-hover">
 						<ion-icon icon-big name="ios-share" grey></ion-icon>&nbsp;&nbsp; Compartir
 					</button>
 				</ion-col>
@@ -237,7 +243,8 @@
 			<ion-row padding-8 wrap border style="margin:20px 10px">
 				<ion-col padding-8 width-25 *ngFor="let product of relatedProducts" [navPush]="DetailPage" [navParams]="{id:product.id}">
 					<div relative overflow>
-						<img-loader float-left useImg [spinner]="false" *ngIf="product.square_image" src="{{product.square_image}}"></img-loader>
+						<!--<img-loader float-left useImg [spinner]="false" *ngIf="product.square_image" src="{{product.square_image}}"></img-loader>-->
+						<img float-left  *ngIf="product.square_image" src="{{product.square_image}}" />
 						<img float-left border *ngIf="product.square_image == ''" src="assets/images/logo-preload.png" />
 						<div absolute bottom right rojo-bg product-sale style="margin-right:0;font-size:1.1rem;" *ngIf="(product.sale_price && product.type!='variable' && product.type!='grouped') || ((product.type=='variable'||product.type=='grouped') && product.on_sale)"
 						 class="sale">

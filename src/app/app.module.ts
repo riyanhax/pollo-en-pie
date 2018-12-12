@@ -98,13 +98,18 @@ import { CreditCardPage } from '../pages/credit-card/credit-card';
 import { ShoppingListSchedulePage } from '../pages/shopping-list-schedule/shopping-list-schedule';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { DelportalDb } from '../service/delportal.db.service';
+import { ProgressBarComponent } from '../components/progress-bar/progress-bar';
+import { DownloaderPage } from '../pages/downloader/downloader';
+import { ConnectivityServiceProvider } from '../providers/connectivity-service/connectivity-service';
+import { GoogleMapsProvider } from '../providers/google-maps/google-maps';
+import { LocationSelectPage } from '../pages/location-select/location-select';
+import { Geolocation } from '@ionic-native/geolocation';
 
 
 @NgModule({
 	declarations: [
 		MyApp,
 		AboutFooterComponent,
-
 		DetailCategoryPage,
 		SearchPage,
 		StorePage,
@@ -163,7 +168,10 @@ import { DelportalDb } from '../service/delportal.db.service';
 		BillingAddressPage,
 		UserCardsPage,
 		CreditCardPage,
-		ShoppingListSchedulePage
+		ShoppingListSchedulePage,
+		ProgressBarComponent,
+		DownloaderPage,
+		LocationSelectPage
 	],
 	imports: [
 		BrowserModule,
@@ -242,7 +250,9 @@ import { DelportalDb } from '../service/delportal.db.service';
 		BillingAddressPage,
 		UserCardsPage,
 		CreditCardPage,
-		ShoppingListSchedulePage
+		ShoppingListSchedulePage,
+		DownloaderPage,
+		LocationSelectPage
 	],
 	providers: [
 		Config,
@@ -259,8 +269,11 @@ import { DelportalDb } from '../service/delportal.db.service';
 		BarcodeScanner,
 		FileTransfer,
 		SQLite,
-		DelportalDb,
+        DelportalDb,
+        Geolocation,
 		{ provide: ErrorHandler, useClass: IonicErrorHandler },
+		ConnectivityServiceProvider,
+		GoogleMapsProvider,
 		/*Facebook*/
 	]
 })

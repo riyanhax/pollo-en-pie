@@ -23,14 +23,14 @@
 	<ion-list class="adressesList" *ngIf="!noResult" padding>
 		<ion-item-sliding *ngFor="let card of userCards" relative>
 			<ion-item [navPush]="CreditCardPage" [navParams]="{id: card.id}">
-				<h3 green2><span *ngIf='card.is_default'>
+				<h3 green2><span *ngIf="card.is_default == 'on'">
 						<ion-icon name="heart"></ion-icon>&nbsp;&nbsp;
 					</span>{{card.title}}</h3>
 				<p>{{card.mask}}</p>
 
 			</ion-item>
 			<ion-item-options side="right">
-				<button *ngIf='!card.is_default' ion-button (click)="setDefault(card.id)" color="delportal">
+				<button *ngIf="address.is_default == 'off'" ion-button (click)="setDefault(card.id)" color="delportal">
 					<ion-icon large name="heart"></ion-icon>
 				</button>
 				<button ion-button (click)="delete(card.id)" color="rojo">

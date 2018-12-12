@@ -16,33 +16,65 @@
 <ion-content padding text-center>
     <ion-list class="edit-form" no-margin>
         <form [formGroup]="orderCheckoutForm">
-            <ion-item bg-transparent no-padding>
-                <ion-label stacked>Datos para Facturación</ion-label>
-                <ion-select formControlName="billingAddressId" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate">
-                    <ion-option *ngFor="let ba of billingAddresses" value="{{ba.id}}" [selected]="ba.is_default">{{ba.title}}</ion-option>
-                </ion-select>
-            </ion-item>
-            <ion-item bg-transparent no-padding>
-                <ion-label stacked>Dirección de Entrega</ion-label>
-                <ion-select formControlName="shippingAddressId" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate">
-                    <ion-option *ngFor="let da of deliveryAddresses" value="{{da.id}}" [selected]="da.is_default">{{da.title}}</ion-option>
-                </ion-select>
-            </ion-item>
-            <ion-item bg-transparent no-padding>
-                <ion-label stacked>Forma de Pago</ion-label>
-                <ion-select formControlName="creditCardId" [cancelText]="'general.cancel'|translate" [okText]="'general.ok'|translate">
-                    <ion-option *ngFor="let cc of creditCards" value="{{cc.id}}" [selected]="cc.is_default">{{cc.title}}
-                        -
-                        {{cc.mask}}</ion-option>
-                </ion-select>
-            </ion-item>
             <ion-row>
-                <ion-col [class]="{'invalid':orderCheckoutForm.submitted && orderCheckoutForm.controls.cardCvv.errors}"
+                <ion-col col-10>
+                    <ion-item bg-transparent no-padding>
+                        <ion-label floating>Dirección de Entrega</ion-label>
+                        <ion-select interface="popover" formControlName="shippingAddressId" [cancelText]="'general.cancel'|translate"
+                            [okText]="'general.ok'|translate">
+                            <ion-option *ngFor="let da of deliveryAddresses" value="{{da.id}}" [selected]="da.is_default == 'on'">{{da.title}}</ion-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 align-self-end>
+                    <button ion-button (click)="newDeliveryAddress()" class="disable-hover">
+                        <ion-icon name="add" size="large"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-10>
+                    <ion-item bg-transparent no-padding>
+                        <ion-label floating>Datos para Facturación</ion-label>
+                        <ion-select interface="popover" formControlName="billingAddressId" [cancelText]="'general.cancel'|translate"
+                            [okText]="'general.ok'|translate">
+                            <ion-option *ngFor="let ba of billingAddresses" value="{{ba.id}}" [selected]="ba.is_default == 'on'">{{ba.title}}</ion-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 align-self-end>
+                    <button ion-button (click)="newBillingAddress()" class="disable-hover">
+                        <ion-icon name="add" size="large"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+
+            <ion-row>
+                <ion-col col-10>
+                    <ion-item bg-transparent no-padding>
+                        <ion-label floating>Forma de Pago</ion-label>
+                        <ion-select interface="popover" formControlName="creditCardId" [cancelText]="'general.cancel'|translate"
+                            [okText]="'general.ok'|translate">
+                            <ion-option *ngFor="let cc of creditCards" value="{{cc.id}}" [selected]="cc.is_default == 'on'">{{cc.title}}
+                                -
+                                {{cc.mask}}</ion-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2 align-self-end>
+                    <button ion-button (click)="newCreditCard()" class="disable-hover">
+                        <ion-icon name="add" size="large"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col col-6 align-self-center>
+                    <ion-label no-margin style="color:#999;">Código de Seguridad</ion-label>
+                </ion-col>
+
+                <ion-col col-6 [class]="{'invalid':orderCheckoutForm.submitted && orderCheckoutForm.controls.cardCvv.errors}"
                     align-self-center>
                     <ion-item>
-                        <ion-label font-90 no-margin style="color:#999;">Código de Seguridad</ion-label>
-                    </ion-item>
-                    <ion-item text-center class="block-cc">
                         <input type="tel" autocomplete="cc-cvc" id="cc-cvc" ccCvc formControlName="cardCvv">
                     </ion-item>
                 </ion-col>
@@ -55,9 +87,9 @@
     </ion-list>
 
     <ion-row>
-        <ion-col>
-            <button ion-button block icon-right margin-top (click)="confirm()" class="button-checkout" [disabled]="orderCheckoutForm.invalid">
-                <span text-uppercase>Confirmo mi Pedido</span>
+        <ion-col text-center>
+            <button ion-button icon-right margin-top (click)="confirm()" class="button-checkout" [disabled]="orderCheckoutForm.invalid">
+                <span>Confirmo mi Pedido</span>
             </button>
         </ion-col>
     </ion-row>

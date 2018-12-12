@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef, Input, NgZone } from '@angular/core';
 import { Http, Headers } from '@angular/http';
-import { Platform, IonicPage, NavController, NavParams, TextInput, Events, AlertController } from 'ionic-angular';
+import { Platform, IonicPage, NavController, NavParams, TextInput, Events, AlertController, ModalController } from 'ionic-angular';
 
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { OneSignal } from '@ionic-native/onesignal';
@@ -31,6 +31,7 @@ import { Delportal } from '../../service/delportal.service';
 import { DelportalDb } from '../../service/delportal.db.service';
 import { GoogleMaps, GoogleMap, Marker, ILatLng, GoogleMapOptions, 
 	GoogleMapsEvent, Spherical, LatLng, Geocoder, GeocoderResult } from '@ionic-native/google-maps';
+import { LocationSelectPage } from '../location-select/location-select';
 
 
 /**
@@ -60,7 +61,8 @@ export class DeliveryAddressPage {
 	FavoritePage = FavoritePage;
 	AboutPage = AboutPage;
 	TermsPage = TermsPage;
-	PrivacyPage = PrivacyPage;
+    PrivacyPage = PrivacyPage;
+    LocationSelectPage = LocationSelectPage;
 	ContactPage = ContactPage;
 	
 	LoginPage = LoginPage;
@@ -100,7 +102,7 @@ export class DeliveryAddressPage {
 		public dp: Delportal,
 		public dpdb: DelportalDb,
 		private alertCtrl: AlertController,
-		
+		public modalCtrl: ModalController
 	) {
 		platform.ready().then(() => {
 			if (platform.is('cordova')) {
@@ -144,9 +146,13 @@ export class DeliveryAddressPage {
 					this.login = val['login'];
 				this.isLoggedIn = this.user != null ? true : false;
 
-				
 				this.dp.getUserDeliveryAddresses(this.login).then(addresses => {
 					this.userAddresses = addresses;
+					
+					let defaultAddr = this.userAddresses.find((u) => u['is_default'] == 'on');
+					
+					if (defaultAddr)
+						this.selectedAddressId = defaultAddr['id'];
 				});
 
 			}
@@ -206,7 +212,8 @@ export class DeliveryAddressPage {
 			});
 		this.map.on(GoogleMapsEvent.MAP_DRAG).subscribe(
 			() => {
-				let pos = this.map.getCameraTarget();
+                let pos = this.map.getCameraTarget();
+                
 				this.marker.setPosition(pos);
 			}
 		);
@@ -214,7 +221,8 @@ export class DeliveryAddressPage {
 			() => {
 				let pos = this.map.getCameraTarget();
 				this.lastLatLng = pos;
-				this.setReverseAddress(pos);
+                this.setReverseAddress(pos);
+                this.setNearestStore(pos);
 			}
 		);
 		this.map.on(GoogleMapsEvent.MY_LOCATION_BUTTON_CLICK).subscribe(
@@ -251,36 +259,36 @@ export class DeliveryAddressPage {
 				this.setReverseAddress(response.latLng);
 				this.lastLatLng = response.latLng;
 
-				let ns : Object = {};
-				let minDistance = 999999999999999;
-				this.stores.forEach(element => {
-					let storeLatLng = new LatLng(element['latitude'], element['longitude']);
-					let distance = Spherical.computeDistanceBetween(storeLatLng, response.latLng)
-					if (distance < minDistance){
-						ns = element;
-						minDistance = distance;
-						this.nearestStore = ns;
-					}
-				});
-				if (minDistance > max_distance){
-					this.mapBtnTxt = "Fuera de Cobertura";
-					this.toast.showLongCenter("Lo sentimos, no tenemos cobertura en tu ubicación actual").subscribe(
-                        toast => { },
-                        error => { console.log(error); }
-                    );
-				} else {
-					console.log(ns);
-					this.validateHours(ns['opening'], ns['closing']);
-				}
+				this.setNearestStore(response.latLng);
 			})
 			.catch(error => {
 				console.log(error);
 			});
 	}
 
+    private setNearestStore(latLng: ILatLng) {
+        let ns: Object = {};
+        let minDistance = 999999999999999;
+        this.stores.forEach(element => {
+            let storeLatLng = new LatLng(element['latitude'], element['longitude']);
+            let distance = Spherical.computeDistanceBetween(storeLatLng, latLng);
+            if (distance < minDistance) {
+                ns = element;
+                minDistance = distance;
+                this.nearestStore = ns;
+            }
+        });
+        if (minDistance > max_distance) {
+            this.mapBtnTxt = "Fuera de Cobertura";
+            this.toast.showLongCenter("Lo sentimos, no tenemos cobertura en tu ubicación actual").subscribe(toast => { }, error => { console.log(error); });
+        }
+        else {
+            this.validateHours(ns['opening'], ns['closing']);
+        }
+    }
+
 	validateHours(opening: string, closing: string){
 		let currentDate = new Date();
-		console.log(currentDate.getHours() + ":" + currentDate.getMinutes());
 		let currentTime = Date.parse("01/01/2011 " + currentDate.getHours() + ":" + (currentDate.getMinutes()<10?"0":"") +  currentDate.getMinutes());
 		let openingTime = Date.parse("01/01/2011 "+ opening);
 		let closingTime = Date.parse("01/01/2011 "+ closing);
@@ -345,22 +353,23 @@ export class DeliveryAddressPage {
 	}
 	conf(){
 		let ua = this.userAddresses.find(e => e['id'] == this.selectedAddressId);
-		console.log(ua);
+		
 		this.selectedAddress['id'] = ua['id'];
-		this.selectedAddress['title'] = ua['title'];
-		this.selectedAddress['storeId'] = ua['storeId'];
-		this.selectedAddress['latitude'] = ua['latitude'];
-		this.selectedAddress['longitude'] = ua['longitude'];
 		this.storage.set('workingDeliveryAddress', this.selectedAddress);		
 		this.navCtrl.push(StorePage);
 	}
 	confMap(){
 		this.selectedAddress['title'] = this.reverseAddress;
-		this.selectedAddress['latitude'] = this.lastLatLng.lat;
-		this.selectedAddress['longitude'] = this.lastLatLng.lng;
-		this.selectedAddress['storeId'] = this.nearestStore['store_id'];
+		this.selectedAddress['shipping_latitude'] = this.lastLatLng.lat;
+		this.selectedAddress['shipping_longitude'] = this.lastLatLng.lng;
+        this.selectedAddress['shipping_store'] = this.nearestStore['store_id'];
+        console.log(this.selectedAddress);
 		this.storage.set('workingDeliveryAddress', this.selectedAddress );		
 		this.navCtrl.push(StorePage);
 	}
 
+
+    launchLocationPage(){
+        this.goto(LocationSelectPage);
+    }
 }

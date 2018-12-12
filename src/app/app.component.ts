@@ -39,6 +39,7 @@ import { StorePage } from '../pages/store/store';
 import { Delportal } from '../service/delportal.service';
 import { DelportalSearchService } from '../service/delportal.search.service';
 import { DelportalDb } from '../service/delportal.db.service';
+import { DownloaderPage } from '../pages/downloader/downloader';
 
 declare var wordpress_url: string;
 declare var display_mode: string;
@@ -98,7 +99,6 @@ export class MyApp {
 			
 
 			imageLoaderConfig.enableDebugMode();
-			imageLoaderConfig.setHttpHeaders( new HttpHeaders({timeout: '60000'}));
 			imageLoaderConfig.enableFallbackAsPlaceholder(true);
 			imageLoaderConfig.setFallbackUrl('assets/images/logo-preload.png');
 			imageLoaderConfig.setFileNameCachedWithExtension(true);
@@ -166,10 +166,10 @@ export class MyApp {
 			{ title: 'Catálogo de Productos', component: StorePage },
 			{ title: 'Listas de Compras', component: ShoppingListsPage },
 			{ title: 'Historial de Compras', component: OrderPage },
-			{ title: 'Mi Tarjeta Delportal', component: CardPage },
+			/*{ title: 'Mi Tarjeta Delportal', component: CardPage },*/
 			{ title: 'Locales Cercanos', component: StoresPage },
-			{ title: 'Ajustes', component: SettingsPage },
-			{ title: 'Ayuda', component: AboutPage },
+			/*{ title: 'Ajustes', component: SettingsPage },
+			{ title: 'Ayuda', component: AboutPage },*/
 		];
 
 
@@ -206,14 +206,13 @@ export class MyApp {
 					if (val['catalog_version'] != null)
 						currentCatalogVersion = parseInt(val['catalog_version']);
 					let serverCatalogVersion = parseInt(returnedValue.catalog_version);
+					this.SplashScreen.hide();
 					if (currentCatalogVersion < serverCatalogVersion){
-						this.dpdb.downloadProductsFile(serverCatalogVersion).then(() => {
-							this.SplashScreen.hide();
-							this.rootPage = DeliveryAddressPage;
-							storage.set('catalog_version', serverCatalogVersion);
+						storage.set('serverCatalogVersion', serverCatalogVersion).then(() => {
+							this.rootPage = DownloaderPage;
 						});
+						
 					} else {
-						this.SplashScreen.hide();
 						this.rootPage = DeliveryAddressPage;
 					}
 					// config.set('currency', res.json()['currency']);

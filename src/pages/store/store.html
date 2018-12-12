@@ -163,7 +163,8 @@
 		<ion-col padding-8 relative [attr.width-33]="filter.grid ? true : null" *ngFor="let product of products" class="product-block">
 			<div [navPush]="DetailPage" [navParams]="{id:product.id}" relative class="product-image clearfix">
 				<ion-badge green3-bg *ngIf="cartArray[product.id] != null" item-left absolute>{{cartArray[product.id].qty}}</ion-badge>
-				<img-loader useImg [spinner]="false" float-left *ngIf="product.square_image" src="{{product.square_image}}"></img-loader>
+				<!--<img-loader useImg [spinner]="false" float-left *ngIf="product.square_image != ''" src="{{product.square_image}}"></img-loader>-->
+				<img float-left *ngIf="product.square_image != ''" src="{{product.square_image}}" />
 				<img float-left border *ngIf="product.square_image == ''" src="assets/images/logo-preload.png" />
 				<div absolute bottom right rojo-bg product-sale style="margin-right:0;" *ngIf="(product.sale_price && product.type!='variable' && product.type!='grouped') || ((product.type=='variable'||product.type=='grouped') && product.on_sale)"
 				 class="sale">

@@ -32,7 +32,7 @@ export class UserBillingPage {
 	}
 
 	ionViewDidEnter() {
-		console.log('ionViewDidLoad UserBillingPage');
+		
 		this.setData();
 	}
 
@@ -60,7 +60,7 @@ export class UserBillingPage {
 
 	setDefault(id:number){
 		let uc = this.billingAddresses.find((c) => c['id'] == id);
-		uc['is_default'] = !uc['is_default'];
+		uc['is_default'] = "on";
 		if (uc){
 			this.dp.saveBillingAddress(this.login, uc).then(data => {
 				this.billingAddresses = data;
