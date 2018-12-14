@@ -382,6 +382,13 @@ export class Delportal {
             } else {
                 url = wordpress_url + '/wp-json/delportal/v1/update_billing_address'
             }
+
+            if (billingAddress['is_default'] == "true"){
+                billingAddress['is_default'] = "on"
+            } else {
+                billingAddress['is_default'] = "off"
+            }
+
             let params = this.core.objectToURLParams(billingAddress);
             this.http.post(url, params, option)
                 .subscribe(res => {

@@ -295,8 +295,9 @@ export class LocationSelectPage {
             let config = {
                 types: ['geocode'],
                 input: this.query,
-                location: { lat: -2.2038, lng: -79.8975 },
-                radius: 50000
+                location: new google.maps.LatLng(-2.2038, -79.8975),
+                radius: 50000,
+                strictbounds: true
             }
 
             this.autocompleteService.getPlacePredictions(config, (predictions, status) => {

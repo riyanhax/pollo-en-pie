@@ -93,7 +93,7 @@ export class BillingAddressPage {
 	checkCustomer(){
 		this.dp.getCustomerData(this.formBillingAddress.get('document_number').value).then((customer) => {
 			if (customer['id'] > 0){
-                let names = customer['name'].split(" ",1);
+                let names = customer['name'].split(" ");
 				this.formBillingAddress.patchValue({
                     first_name: names[0],
                     last_name: names[1],
